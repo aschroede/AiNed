@@ -5,11 +5,16 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.widgets import Button
 
 class Dipole:
-    def __init__(self, state=0):
+    def __init__(self, state=0, dirty = False):
         self.state = state
+        self.dirty = dirty
 
     def flip(self):
         self.state = 1 - self.state
+        self.dirty = True
+
+    def reset_dirty(self):
+        self.dirty = False
 
 class Board:
     def __init__(self, size_x, size_y, flip_probability):
@@ -56,17 +61,41 @@ class Board:
         self.grid[x, y].flip()
         self.update_display()
 
+    def clear_dirty_bits(self):
+        for i in range(self.size_x):
+            for j in range(self.size_y):
+                self.grid[i, j].reset_dirty()
+
     def propagate_step(self, event):
         # Calculate states of static dipoles based on dynamic dipoles and distance
         # Update self.grid accordingly
-        pass
+        self.clear_dirty_bits()
+        self.update_display()
 
     def read_step(self):
         self.update_display()
 
     def update_display(self):
-        self.im.set_array(self.get_states())
+        states = self.get_states()
+        self.im.set_array(states)
+
+        # Create a list of colored rectangles for dirty dipoles
+        dirty_patches = []
+        for i in range(self.size_x):
+            for j in range(self.size_y):
+                if self.grid[i, j].dirty:
+                    patch = plt.Rectangle((j, i), 1, 1, linewidth=3, edgecolor='red', facecolor='none')
+                    dirty_patches.append(patch)
+
+        # Clear the previous dirty patches and add the new ones
+        for patch in getattr(self, '_dirty_patches', []):
+            patch.remove()
+        for patch in dirty_patches:
+            self.ax.add_patch(patch)
+        self._dirty_patches = dirty_patches
+
         self.fig.canvas.draw()
+            
 
     def on_click(self, event):
         if event.inaxes == self.ax:
@@ -80,8 +109,6 @@ class Board:
 board = Board(size_x=8, size_y=8, flip_probability=0.2)
 board.initialize_grid()
 board.flip_dipole(1,1)
-board.flip_dipole(2,2)
-board.flip_dipole(4, 6)
 
 
 board.display()
