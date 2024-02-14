@@ -3,9 +3,13 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.animation import FuncAnimation
 from matplotlib.widgets import Button
+import random
+import math
 
 class Dipole:
-    def __init__(self, state=0, dirty = False):
+    def __init__(self, x, y, state=0, dirty = False):
+        self.x = x
+        self.y = y
         self.state = state
         self.dirty = dirty
 
@@ -26,7 +30,7 @@ class Board:
     def initialize_grid(self):
         for i in range(self.size_x):
             for j in range(self.size_y):
-                self.grid[i, j] = Dipole()
+                self.grid[i, j] = Dipole(i, j)
 
     def display(self):
         states = self.get_states()
@@ -58,6 +62,7 @@ class Board:
         #     self.covariant_flip(x, y)
 
     def write_step(self, x, y):
+        self.clear_dirty_bits()
         self.grid[x, y].flip()
         self.update_display()
 
@@ -69,8 +74,35 @@ class Board:
     def propagate_step(self, event):
         # Calculate states of static dipoles based on dynamic dipoles and distance
         # Update self.grid accordingly
-        self.clear_dirty_bits()
+
+        sources = []
+
+        for i in range(self.size_x):
+            for j in range(self.size_y):
+                if self.grid[i, j].dirty:
+                    sources.append(self.grid[i,j])
+
+        for source in sources:
+            for i in range(self.size_x):
+                for j in range(self.size_y):
+                    if self.grid[i, j].dirty == False:
+                        self.covariation(source, self.grid[i, j])
+
         self.update_display()
+
+
+    def covariation(self, source: Dipole, sink: Dipole):
+        
+        distance = self.manhatten_distance(source, sink)
+        if random.randint(0,100) < (math.pow(self.flip_probability, distance) )*100:
+            sink.state = source.state
+
+    def manhatten_distance(self, first: Dipole, second: Dipole):
+        x_delta = abs(first.x - second.x)
+        y_delta = abs(first.y - second.y)
+        return x_delta + y_delta
+        
+        
 
     def read_step(self):
         self.update_display()
