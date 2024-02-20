@@ -6,6 +6,7 @@ from matplotlib.widgets import Button
 import random
 import math
 
+# Small test
 class Dipole:
     def __init__(self, x, y, state=0, dirty = False):
         self.x = x
