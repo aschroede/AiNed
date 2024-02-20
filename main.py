@@ -12,6 +12,7 @@ class Dipole:
         self.y = y
         self.state = state
         self.dirty = dirty
+        self.prob = 0.0
 
     def flip(self):
         self.state = 1 - self.state
@@ -19,6 +20,8 @@ class Dipole:
 
     def reset_dirty(self):
         self.dirty = False
+
+
 
 class Board:
     def __init__(self, size_x, size_y, flip_probability):
@@ -45,7 +48,7 @@ class Board:
 
         self.fig.canvas.mpl_connect('button_press_event', self.on_click)
         self.propagate_button = Button(plt.axes([0.8, 0.01, 0.15, 0.05]), 'Propagate')
-        self.propagate_button.on_clicked(self.propagate_step)
+        self.propagate_button.on_clicked(self.update_display)
 
         plt.show()
 
@@ -63,51 +66,70 @@ class Board:
 
     def write_step(self, x, y):
         self.clear_dirty_bits()
+
         self.grid[x, y].flip()
-        self.update_display()
+
+        # After flipping a bit we should calculate the probs and display them
+        self.calc_probs()
+        self.update_display_probs()
+        #self.update_display()
 
     def clear_dirty_bits(self):
         for i in range(self.size_x):
             for j in range(self.size_y):
                 self.grid[i, j].reset_dirty()
 
-    def propagate_step(self, event):
+    def calc_probs(self, simulate=False):
         # Calculate states of static dipoles based on dynamic dipoles and distance
         # Update self.grid accordingly
 
         sources = []
 
+        # Collect all the dirty bits (dynamic bits)
         for i in range(self.size_x):
             for j in range(self.size_y):
                 if self.grid[i, j].dirty:
                     sources.append(self.grid[i,j])
 
+        # Using the dirty bits, calculate if the static bits should change
         for source in sources:
             for i in range(self.size_x):
                 for j in range(self.size_y):
                     if self.grid[i, j].dirty == False:
-                        self.covariation(source, self.grid[i, j])
 
-        self.update_display()
+                        self.calc_prob(source, self.grid[i, j])
+
+        #self.update_display()
 
 
-    def covariation(self, source: Dipole, sink: Dipole):
+    def calc_prob(self, source: Dipole, sink: Dipole):
         
         distance = self.manhatten_distance(source, sink)
-        if random.randint(0,100) < (math.pow(self.flip_probability, distance) )*100:
+        sink.prob = math.pow(self.flip_probability, distance)
+        if random.randint(0,100) < (sink.prob)*100:
             sink.state = source.state
+
+
 
     def manhatten_distance(self, first: Dipole, second: Dipole):
         x_delta = abs(first.x - second.x)
         y_delta = abs(first.y - second.y)
         return x_delta + y_delta
         
-        
 
     def read_step(self):
         self.update_display()
 
-    def update_display(self):
+    def update_display_probs(self):
+
+        self.ax.texts.clear()  # Clear previous text annotations
+        for i in range(self.size_x):
+            for j in range(self.size_y):
+                self.ax.text(j+0.5, i+0.5, f'{self.grid[i,j].prob:.2f}', ha='center', va='center', color='red', fontsize=8)
+
+        self.fig.canvas.draw()
+        
+    def update_display(self, event):
         states = self.get_states()
         self.im.set_array(states)
 
