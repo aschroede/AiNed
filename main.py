@@ -65,15 +65,16 @@ class Board:
         # if np.random.rand() < self.flip_probability:
         #     self.covariant_flip(x, y)
 
-    def write_step(self, x, y):
-        self.clear_dirty_bits()
+    def write(self, x, y):
+        #self.clear_dirty_bits()
 
         self.grid[x, y].flip()
+        print(self.grid)
+        self.update_display()
 
         # After flipping a bit we should calculate the probs and display them
         self.calc_probs()
         self.update_display_probs()
-        #self.update_display()
 
     def clear_dirty_bits(self):
         for i in range(self.size_x):
@@ -130,9 +131,10 @@ class Board:
 
         self.fig.canvas.draw()
         
-    def update_display(self, event):
+    def update_display(self):
         states = self.get_states()
         self.im.set_array(states)
+        self.im.set_clim(vmin=0, vmax=1)
 
         # Create a list of colored rectangles for dirty dipoles
         dirty_patches = []
@@ -158,12 +160,11 @@ class Board:
 
             # For some reason the x and y coordinates need to be swapped for 
             # clicking to work correctly. 
-            self.write_step(y, x)
+            self.write(y, x)
 
 # Example usage
 board = Board(size_x=8, size_y=8, flip_probability=0.2)
 board.initialize_grid()
-board.flip_dipole(1,1)
 
 
 board.display()
