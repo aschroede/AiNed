@@ -11,13 +11,18 @@ class Dipole:
     def __init__(self, x, y, state=0, dirty = False):
         self.x = x
         self.y = y
-        self.state = state
+        self.current_state = state
         self.dirty = dirty
         self.prob = 0.0
+        self.proposed_state = state
 
-    def flip(self):
-        self.state = 1 - self.state
-        self.dirty = True
+    def stage_flip(self):
+        self.proposed_state = 1 - self.proposed_state
+
+        if (self.proposed_state != self.current_state):
+            self.dirty = True
+        else:
+            self.dirty = False
 
     def reset_dirty(self):
         self.dirty = False
@@ -37,11 +42,11 @@ class Board:
                 self.grid[i, j] = Dipole(i, j)
 
     def display(self):
-        states = self.get_states()
+        states = self.get_proposed_states()
 
         self.fig, self.ax = plt.subplots()
 
-        self.im = self.ax.imshow(self.get_states(), cmap='binary', origin='lower', extent=[0, self.size_x, 0, self.size_y])
+        self.im = self.ax.imshow(self.get_proposed_states(), cmap='binary', origin='lower', extent=[0, self.size_x, 0, self.size_y])
         plt.grid(True, color='blue', linewidth=1)
         plt.xticks(np.arange(0, self.size_x + 1, 1))
         plt.yticks(np.arange(0, self.size_y + 1, 1))
@@ -49,15 +54,15 @@ class Board:
 
         self.fig.canvas.mpl_connect('button_press_event', self.on_click)
         self.propagate_button = Button(plt.axes([0.8, 0.01, 0.15, 0.05]), 'Propagate')
-        self.propagate_button.on_clicked(self.update_display)
+        self.propagate_button.on_clicked(self.update_proposed_display)
 
         plt.show()
 
-    def get_states(self):
+    def get_proposed_states(self):
         states = np.zeros((self.size_x, self.size_y))
         for i in range(self.size_x):
             for j in range(self.size_y):
-                states[i, j] = self.grid[i, j].state
+                states[i, j] = self.grid[i, j].proposed_state
         return states
 
     def flip_dipole(self, x, y):
@@ -68,13 +73,27 @@ class Board:
     def write(self, x, y):
         #self.clear_dirty_bits()
 
-        self.grid[x, y].flip()
+        self.grid[x, y].stage_flip()
         print(self.grid)
-        self.update_display()
+        self.update_proposed_display()
 
         # After flipping a bit we should calculate the probs and display them
-        self.calc_probs()
-        self.update_display_probs()
+
+        if(self.board_dirty()):
+            self.calc_probs()
+            self.update_display_probs()
+        else:
+            self.clear_display_probs()
+
+
+    def board_dirty(self):
+        dirty = False
+        for i in range(self.size_x):
+            for j in range(self.size_y):
+                if self.grid[i, j].dirty == True:
+                    dirty = True
+                    break
+        return dirty
 
     def clear_dirty_bits(self):
         for i in range(self.size_x):
@@ -109,7 +128,7 @@ class Board:
         distance = self.manhatten_distance(source, sink)
         sink.prob = math.pow(self.flip_probability, distance)
         if random.randint(0,100) < (sink.prob)*100:
-            sink.state = source.state
+            sink.current_state = source.current_state
 
 
 
@@ -120,19 +139,23 @@ class Board:
         
 
     def read_step(self):
-        self.update_display()
+        self.update_proposed_display()
+
+    def clear_display_probs(self):
+        self.ax.texts.clear()      
+        self.fig.canvas.draw()  
 
     def update_display_probs(self):
-
         self.ax.texts.clear()  # Clear previous text annotations
         for i in range(self.size_x):
             for j in range(self.size_y):
-                self.ax.text(j+0.5, i+0.5, f'{self.grid[i,j].prob:.2f}', ha='center', va='center', color='red', fontsize=8)
+                if(self.grid[i,j].dirty == False):
+                    self.ax.text(j+0.5, i+0.5, f'{self.grid[i,j].prob:.2f}', ha='center', va='center', color='red', fontsize=8)
 
         self.fig.canvas.draw()
-        
-    def update_display(self):
-        states = self.get_states()
+
+    def update_proposed_display(self):
+        states = self.get_proposed_states()
         self.im.set_array(states)
         self.im.set_clim(vmin=0, vmax=1)
 
@@ -163,7 +186,7 @@ class Board:
             self.write(y, x)
 
 # Example usage
-board = Board(size_x=8, size_y=8, flip_probability=0.2)
+board = Board(size_x=3, size_y=3, flip_probability=0.2)
 board.initialize_grid()
 
 
