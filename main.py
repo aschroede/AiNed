@@ -5,6 +5,7 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.widgets import Button
 import random
 import math
+import time
 
 # Small test
 class Dipole:
@@ -24,6 +25,15 @@ class Dipole:
         else:
             self.dirty = False
 
+    def set_current_state(self, state):
+        self.current_state = state
+        self.proposed_state = self.current_state
+
+    def commit_flip(self):
+        if(self.dirty):
+            self.current_state = self.proposed_state
+            self.dirty = False
+
     def reset_dirty(self):
         self.dirty = False
 
@@ -35,6 +45,7 @@ class Board:
         self.size_y = size_y
         self.flip_probability = flip_probability
         self.grid = np.zeros((size_x, size_y), dtype=Dipole)
+        self.dirty_dipoles = []
 
     def initialize_grid(self):
         for i in range(self.size_x):
@@ -42,8 +53,6 @@ class Board:
                 self.grid[i, j] = Dipole(i, j)
 
     def display(self):
-        states = self.get_proposed_states()
-
         self.fig, self.ax = plt.subplots()
 
         self.im = self.ax.imshow(self.get_proposed_states(), cmap='binary', origin='lower', extent=[0, self.size_x, 0, self.size_y])
@@ -53,8 +62,8 @@ class Board:
         plt.gca().set_aspect('equal', adjustable='box')
 
         self.fig.canvas.mpl_connect('button_press_event', self.on_click)
-        self.propagate_button = Button(plt.axes([0.8, 0.01, 0.15, 0.05]), 'Propagate')
-        self.propagate_button.on_clicked(self.update_proposed_display)
+        self.propagate_button = Button(plt.axes([0.8, 0.01, 0.15, 0.05]), 'Commit Writes')
+        self.propagate_button.on_clicked(self.commit_staged_writes)
 
         plt.show()
 
@@ -64,21 +73,29 @@ class Board:
             for j in range(self.size_y):
                 states[i, j] = self.grid[i, j].proposed_state
         return states
+    
+    def get_committed_states(self):
+        states = np.zeros((self.size_x, self.size_y))
+        for i in range(self.size_x):
+            for j in range(self.size_y):
+                states[i, j] = self.grid[i, j].current_state
+        return states
 
     def flip_dipole(self, x, y):
         self.grid[x, y].flip()
         # if np.random.rand() < self.flip_probability:
         #     self.covariant_flip(x, y)
 
-    def write(self, x, y):
+    def stage_write(self, x, y):
         #self.clear_dirty_bits()
-
         self.grid[x, y].stage_flip()
-        print(self.grid)
-        self.update_proposed_display()
+
+        if (self.grid[x,y].dirty):
+            self.dirty_dipoles.append(self.grid[x,y])
+
+        self.display_staged_writes()
 
         # After flipping a bit we should calculate the probs and display them
-
         if(self.board_dirty()):
             self.calc_probs()
             self.update_display_probs()
@@ -122,24 +139,22 @@ class Board:
 
         #self.update_display()
 
+    def propogate(self, source: Dipole, sink: Dipole):
+        if random.randint(0,100) < (sink.prob)*100:
+            sink.set_current_state(source.current_state)
 
     def calc_prob(self, source: Dipole, sink: Dipole):
         
         distance = self.manhatten_distance(source, sink)
         sink.prob = math.pow(self.flip_probability, distance)
-        if random.randint(0,100) < (sink.prob)*100:
-            sink.current_state = source.current_state
-
-
 
     def manhatten_distance(self, first: Dipole, second: Dipole):
         x_delta = abs(first.x - second.x)
         y_delta = abs(first.y - second.y)
         return x_delta + y_delta
-        
 
     def read_step(self):
-        self.update_proposed_display()
+        self.display_staged_writes()
 
     def clear_display_probs(self):
         self.ax.texts.clear()      
@@ -154,10 +169,35 @@ class Board:
 
         self.fig.canvas.draw()
 
-    def update_proposed_display(self):
+
+    def commit_staged_writes(self, event):
+
+        for dd in self.dirty_dipoles:
+            dd.commit_flip()
+
+            for i in range(self.size_x):
+                for j in range(self.size_y):
+                    if self.grid[i, j].dirty == False:
+                        self.propogate(dd, self.grid[i, j])
+
+        self.dirty_dipoles.clear()
+        self.display_committed_writes()
+
+    def display_committed_writes(self):
+        self.clear_display_probs()
+        self.ax.patches.clear()
+        states = self.get_committed_states()
+        self.im.set_array(states)
+        self.im.set_clim(vmin=0, vmax=1)
+        self.fig.canvas.draw()
+
+    def display_staged_writes(self):
+
         states = self.get_proposed_states()
         self.im.set_array(states)
         self.im.set_clim(vmin=0, vmax=1)
+
+        self.ax.patches.clear()
 
         # Create a list of colored rectangles for dirty dipoles
         dirty_patches = []
@@ -168,11 +208,8 @@ class Board:
                     dirty_patches.append(patch)
 
         # Clear the previous dirty patches and add the new ones
-        for patch in getattr(self, '_dirty_patches', []):
-            patch.remove()
         for patch in dirty_patches:
             self.ax.add_patch(patch)
-        self._dirty_patches = dirty_patches
 
         self.fig.canvas.draw()
             
@@ -183,10 +220,10 @@ class Board:
 
             # For some reason the x and y coordinates need to be swapped for 
             # clicking to work correctly. 
-            self.write(y, x)
+            self.stage_write(y, x)
 
 # Example usage
-board = Board(size_x=3, size_y=3, flip_probability=0.2)
+board = Board(size_x=8, size_y=8, flip_probability=0.2)
 board.initialize_grid()
 
 
