@@ -4,6 +4,7 @@ import matplotlib.animation as animation
 from matplotlib.animation import FuncAnimation
 from matplotlib.widgets import Button
 from dipole import Dipole
+from utils import calc_prob
 
 import random
 import math
@@ -15,14 +16,96 @@ class Board:
         self.size_x = size_x
         self.size_y = size_y
         self.flip_probability = flip_probability
-        self.grid = np.zeros((size_x, size_y), dtype=Dipole)
+        self.__grid = np.zeros((size_x, size_y), dtype=Dipole)
         self.dirty_dipoles = []
+        self.initialize_grid()
 
     def initialize_grid(self):
         for i in range(self.size_x):
             for j in range(self.size_y):
-                self.grid[i, j] = Dipole(i, j)
+                self.__grid[i, j] = Dipole(i, j)
 
+    def get_dipole(self, x, y):
+        return self.__grid[x, y]
+
+    def get_proposed_states(self):
+        states = np.zeros((self.size_x, self.size_y))
+        for i in range(self.size_x):
+            for j in range(self.size_y):
+                states[i, j] = self.__grid[i, j].proposed_state
+        return states
+
+    def get_committed_states(self):
+        states = np.zeros((self.size_x, self.size_y))
+        for i in range(self.size_x):
+            for j in range(self.size_y):
+                states[i, j] = self.__grid[i, j].current_state
+        return states
+
+    def stage_write(self, x, y):
+        self.__grid[x, y].stage_flip()
+        if (self.__grid[x, y].dirty):
+            self.dirty_dipoles.append(self.__grid[x, y])
+
+        self.display_staged_writes()
+
+        # After flipping a bit we should calculate the probs and display them
+        if (self.board_dirty()):
+            self.calc_probs()
+            self.display_probs()
+        else:
+            self.clear_probs()
+
+    def commit_staged_writes(self, event):
+
+        for dd in self.dirty_dipoles:
+            dd.commit_flip()
+
+            for i in range(self.size_x):
+                for j in range(self.size_y):
+                    if self.__grid[i, j].dirty == False:
+                        self.propogate(dd, self.__grid[i, j])
+
+        self.dirty_dipoles.clear()
+        self.display_committed_writes()
+
+    def board_dirty(self):
+        return len(self.dirty_dipoles) > 0
+
+    def clear_dirty_bits(self):
+        for i in range(self.size_x):
+            for j in range(self.size_y):
+                self.__grid[i, j].reset_dirty()
+
+    def propogate(self, source: Dipole, sink: Dipole):
+        if random.randint(0, 100) < (sink.prob) * 100:
+            sink.set_current_state(source.current_state)
+
+    # region Calculations
+
+
+    def calc_probs(self, simulate=False):
+        # Calculate states of static dipoles based on dynamic dipoles and distance
+        # Update self.grid accordingly
+
+        sources = []
+
+        # Collect all the dirty bits (dynamic bits)
+        for i in range(self.size_x):
+            for j in range(self.size_y):
+                if self.__grid[i, j].dirty:
+                    sources.append(self.__grid[i, j])
+
+        # Using the dirty bits, calculate if the static bits should change
+        for source in sources:
+            for i in range(self.size_x):
+                for j in range(self.size_y):
+                    if self.__grid[i, j].dirty == False:
+                        prob = calc_prob(source, self.__grid[i, j], self.flip_probability)
+                        self.__grid[i, j].prob = prob
+    # endregion
+
+    # region Display
     def display(self):
         self.fig, self.ax = plt.subplots()
 
@@ -39,122 +122,21 @@ class Board:
 
         plt.show()
 
-    def get_proposed_states(self):
-        states = np.zeros((self.size_x, self.size_y))
-        for i in range(self.size_x):
-            for j in range(self.size_y):
-                states[i, j] = self.grid[i, j].proposed_state
-        return states
-
-    def get_committed_states(self):
-        states = np.zeros((self.size_x, self.size_y))
-        for i in range(self.size_x):
-            for j in range(self.size_y):
-                states[i, j] = self.grid[i, j].current_state
-        return states
-
-    def flip_dipole(self, x, y):
-        self.grid[x, y].flip()
-        # if np.random.rand() < self.flip_probability:
-        #     self.covariant_flip(x, y)
-
-    def stage_write(self, x, y):
-        # self.clear_dirty_bits()
-        self.grid[x, y].stage_flip()
-
-        if (self.grid[x, y].dirty):
-            self.dirty_dipoles.append(self.grid[x, y])
-
-        self.display_staged_writes()
-
-        # After flipping a bit we should calculate the probs and display them
-        if (self.board_dirty()):
-            self.calc_probs()
-            self.update_display_probs()
-        else:
-            self.clear_display_probs()
-
-    def board_dirty(self):
-        dirty = False
-        for i in range(self.size_x):
-            for j in range(self.size_y):
-                if self.grid[i, j].dirty == True:
-                    dirty = True
-                    break
-        return dirty
-
-    def clear_dirty_bits(self):
-        for i in range(self.size_x):
-            for j in range(self.size_y):
-                self.grid[i, j].reset_dirty()
-
-    def calc_probs(self, simulate=False):
-        # Calculate states of static dipoles based on dynamic dipoles and distance
-        # Update self.grid accordingly
-
-        sources = []
-
-        # Collect all the dirty bits (dynamic bits)
-        for i in range(self.size_x):
-            for j in range(self.size_y):
-                if self.grid[i, j].dirty:
-                    sources.append(self.grid[i, j])
-
-        # Using the dirty bits, calculate if the static bits should change
-        for source in sources:
-            for i in range(self.size_x):
-                for j in range(self.size_y):
-                    if self.grid[i, j].dirty == False:
-                        self.calc_prob(source, self.grid[i, j])
-
-        # self.update_display()
-
-    def propogate(self, source: Dipole, sink: Dipole):
-        if random.randint(0, 100) < (sink.prob) * 100:
-            sink.set_current_state(source.current_state)
-
-    def calc_prob(self, source: Dipole, sink: Dipole):
-
-        distance = self.manhatten_distance(source, sink)
-        sink.prob = math.pow(self.flip_probability, distance)
-
-    def manhatten_distance(self, first: Dipole, second: Dipole):
-        x_delta = abs(first.x - second.x)
-        y_delta = abs(first.y - second.y)
-        return x_delta + y_delta
-
-    def read_step(self):
-        self.display_staged_writes()
-
-    def clear_display_probs(self):
+    def clear_probs(self):
         self.ax.texts.clear()
         self.fig.canvas.draw()
 
-    def update_display_probs(self):
+    def display_probs(self):
         self.ax.texts.clear()  # Clear previous text annotations
         for i in range(self.size_x):
             for j in range(self.size_y):
-                if (self.grid[i, j].dirty == False):
-                    self.ax.text(j + 0.5, i + 0.5, f'{self.grid[i, j].prob:.2f}', ha='center', va='center', color='red',
+                if (self.__grid[i, j].dirty == False):
+                    self.ax.text(j + 0.5, i + 0.5, f'{self.__grid[i, j].prob:.2f}', ha='center', va='center', color='red',
                                  fontsize=8)
-
         self.fig.canvas.draw()
 
-    def commit_staged_writes(self, event):
-
-        for dd in self.dirty_dipoles:
-            dd.commit_flip()
-
-            for i in range(self.size_x):
-                for j in range(self.size_y):
-                    if self.grid[i, j].dirty == False:
-                        self.propogate(dd, self.grid[i, j])
-
-        self.dirty_dipoles.clear()
-        self.display_committed_writes()
-
     def display_committed_writes(self):
-        self.clear_display_probs()
+        self.clear_probs()
         self.ax.patches.clear()
         states = self.get_committed_states()
         self.im.set_array(states)
@@ -173,7 +155,7 @@ class Board:
         dirty_patches = []
         for i in range(self.size_x):
             for j in range(self.size_y):
-                if self.grid[i, j].dirty:
+                if self.__grid[i, j].dirty:
                     patch = plt.Rectangle((j, i), 1, 1, linewidth=3, edgecolor='red', facecolor='none')
                     dirty_patches.append(patch)
 
@@ -187,6 +169,7 @@ class Board:
         if event.inaxes == self.ax:
             x, y = int(event.xdata), int(event.ydata)
 
-            # For some reason the x and y coordinates need to be swapped for 
-            # clicking to work correctly. 
+            # For some reason the x and y coordinates need to be swapped for
+            # clicking to work correctly.
             self.stage_write(y, x)
+    # endregion
