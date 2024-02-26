@@ -18,7 +18,7 @@ class Display:
 
         self.fig.canvas.mpl_connect('button_press_event', self.on_click)
         self.propagate_button = Button(plt.axes([0.8, 0.01, 0.15, 0.05]), 'Commit Writes')
-        self.propagate_button.on_clicked(board.commit_staged_writes)
+        self.propagate_button.on_clicked(self.commit_staged_writes)
 
         plt.show()
     
@@ -35,7 +35,7 @@ class Display:
         for i in range(self.board.size_x):
             for j in range(self.board.size_y):
                 if (self.board.get_dipole(i, j).dirty == False):
-                    self.ax.text(j + 0.5, i + 0.5, f'{self.board.get_dipole(i, j)[i, j].prob:.2f}', ha='center', va='center', color='red',
+                    self.ax.text(j + 0.5, i + 0.5, f'{self.board.get_dipole(i, j).prob:.2f}', ha='center', va='center', color='red',
                                  fontsize=8)
         self.fig.canvas.draw()
 
