@@ -18,7 +18,6 @@ class Board:
         self.dirty_dipoles = []
         self.initialize_grid()
 
-
     def initialize_grid(self):
         for i in range(self.size_x):
             for j in range(self.size_y):
@@ -57,20 +56,14 @@ class Board:
                         self.propogate(dd, self.__grid[i, j])
         self.dirty_dipoles.clear()
 
-    def board_dirty(self):
+    def is_dirty(self):
         return len(self.dirty_dipoles) > 0
-
-    def clear_dirty_bits(self):
-        for i in range(self.size_x):
-            for j in range(self.size_y):
-                self.__grid[i, j].reset_dirty()
 
     def propogate(self, source: Dipole, sink: Dipole):
         if random.randint(0, 100) < (sink.prob) * 100:
             sink.set_current_state(source.current_state)
 
     # region Calculations
-
 
     def calc_probs(self, simulate=False):
         # Calculate states of static dipoles based on dynamic dipoles and distance
@@ -92,5 +85,3 @@ class Board:
                         prob = calc_prob(source, self.__grid[i, j], self.flip_probability)
                         self.__grid[i, j].prob = prob
     # endregion
-
-

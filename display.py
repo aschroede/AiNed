@@ -79,7 +79,7 @@ class Display:
             self.display_staged_writes()
 
             # After flipping a bit we should calculate the probs and display them
-            if (self.board.board_dirty()):
+            if (self.board.is_dirty()):
                 self.board.calc_probs()
                 self.display_probs()
             else:
