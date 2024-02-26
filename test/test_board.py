@@ -2,7 +2,7 @@ from numpy.testing import assert_array_equal
 from board import Board
 import numpy as np
 from dipole import Dipole
-import utils
+import calculator
 
 
 def test_get_proposed_states_zeros():
@@ -24,7 +24,7 @@ def test_stage_and_commit_changes():
     assert_array_equal(actual, expected)
 
     # Commit change
-    board.commit_staged_writes()
+    board.commit_and_propagate_staged_writes()
     actual = board.get_committed_states()
     expected = np.zeros((2, 2))
     expected[1, 1] = 1
@@ -42,5 +42,22 @@ def test_stage_write():
 def test_board_dirty():
     board = Board(2, 2, 0.7)
     assert not board.is_dirty()
-    board.stage_write(0,0)
+    board.stage_write(0, 0)
     assert board.is_dirty()
+
+
+def test_propagate():
+    board = Board(2, 2, 0.7)
+
+    # First stage changes
+    board.stage_write(0, 0)
+
+    # Then calculate probabilities of flipping other dipoles
+    board.calc_probs()
+
+    # Then commit the changes and propagate them
+    board.commit_and_propagate_staged_writes()
+
+    actual = board.get_committed_states()
+    expected = np.array([[1, 1], [1, 0]])
+    assert_array_equal(actual, expected)

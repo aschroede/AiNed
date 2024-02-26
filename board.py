@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.animation as animation
 from matplotlib.animation import FuncAnimation
 from dipole import Dipole
-from utils import calc_prob
+from calculator import calc_prob
 
 import random
 import math
@@ -17,6 +17,7 @@ class Board:
         self.__grid = np.zeros((size_x, size_y), dtype=Dipole)
         self.dirty_dipoles = []
         self.initialize_grid()
+        random.seed(1234567)
 
     def initialize_grid(self):
         for i in range(self.size_x):
@@ -45,7 +46,7 @@ class Board:
         if (self.__grid[x, y].dirty):
             self.dirty_dipoles.append(self.__grid[x, y])
 
-    def commit_staged_writes(self):
+    def commit_and_propagate_staged_writes(self):
 
         for dd in self.dirty_dipoles:
             dd.commit_flip()
@@ -54,6 +55,7 @@ class Board:
                 for j in range(self.size_y):
                     if self.__grid[i, j].dirty == False:
                         self.propogate(dd, self.__grid[i, j])
+
         self.dirty_dipoles.clear()
 
     def is_dirty(self):
@@ -67,18 +69,9 @@ class Board:
 
     def calc_probs(self, simulate=False):
         # Calculate states of static dipoles based on dynamic dipoles and distance
-        # Update self.grid accordingly
-
-        sources = []
-
-        # Collect all the dirty bits (dynamic bits)
-        for i in range(self.size_x):
-            for j in range(self.size_y):
-                if self.__grid[i, j].dirty:
-                    sources.append(self.__grid[i, j])
 
         # Using the dirty bits, calculate if the static bits should change
-        for source in sources:
+        for source in self.dirty_dipoles:
             for i in range(self.size_x):
                 for j in range(self.size_y):
                     if self.__grid[i, j].dirty == False:

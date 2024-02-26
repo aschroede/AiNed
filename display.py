@@ -23,7 +23,7 @@ class Display:
         plt.show()
     
     def commit_staged_writes(self, event):
-        self.board.commit_staged_writes()
+        self.board.commit_and_propagate_staged_writes()
         self.display_committed_writes()
         
     def clear_probs(self):
