@@ -1,14 +1,22 @@
+from enum import Enum
+
+
+class State(Enum):
+    UNKNOWN = 0
+    OFF = 1
+    ON = 2
+
 class Dipole:
-    def __init__(self, x, y, state=0, dirty = False):
+    def __init__(self, x, y, dirty=False):
         self.x = x
         self.y = y
-        self.current_state = state
+        self.current_state = State.UNKNOWN
+        self.proposed_state = State.UNKNOWN
         self.dirty = dirty
         self.prob = 0.0
-        self.proposed_state = state
 
     def stage_flip(self):
-        self.proposed_state = 1 - self.proposed_state
+        self.proposed_state = State((self.proposed_state.value + 1) % len(State))
 
         if (self.proposed_state != self.current_state):
             self.dirty = True
@@ -20,7 +28,7 @@ class Dipole:
         self.proposed_state = self.current_state
 
     def commit_flip(self):
-        if(self.dirty):
+        if (self.dirty):
             self.current_state = self.proposed_state
             self.dirty = False
 
