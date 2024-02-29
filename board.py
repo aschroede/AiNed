@@ -13,7 +13,7 @@ class Board:
         self.size_y = size_y
         self.flip_probability = flip_probability
         self.__grid = np.zeros((size_x, size_y), dtype=Dipole)
-        self.dirty_dipoles = []
+        self.dirty_dipoles = set()
         self.initialize_grid()
         random.seed(1234567)
 
@@ -42,7 +42,7 @@ class Board:
     def stage_write(self, x: int, y: int) -> None:
         self.__grid[x, y].stage_flip()
         if (self.__grid[x, y].dirty):
-            self.dirty_dipoles.append(self.__grid[x, y])
+            self.dirty_dipoles.add(self.__grid[x, y])
 
         if not self.__grid[x, y].dirty and self.__grid[x, y] in self.dirty_dipoles:
             self.dirty_dipoles.remove(self.__grid[x, y])
