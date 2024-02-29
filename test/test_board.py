@@ -1,7 +1,7 @@
 from numpy.testing import assert_array_equal
 from board import Board
 import numpy as np
-from dipole import Dipole
+from dipole import Dipole, State
 import calculator
 
 
@@ -19,7 +19,7 @@ def test_stage_and_commit_changes():
     assert_array_equal(actual, expected)
 
     # Write a change
-    board.stage_write(1, 1)
+    board.get_dipole(1,1).stage_flip(State.OFF)
     actual = board.get_committed_states()
     assert_array_equal(actual, expected)
 
@@ -33,7 +33,7 @@ def test_stage_and_commit_changes():
 
 def test_stage_write():
     board = Board(2, 2, 0.7)
-    board.stage_write(0, 0)
+    board.get_dipole(0,0).stage_flip(State.OFF)
     expected = np.zeros((2, 2))
     expected[0, 0] = 1
     assert_array_equal(board.get_proposed_states(), expected)
@@ -42,7 +42,7 @@ def test_stage_write():
 def test_board_dirty():
     board = Board(2, 2, 0.7)
     assert not board.is_dirty()
-    board.stage_write(0, 0)
+    board.get_dipole(0,0).stage_flip(State.ON)
     assert board.is_dirty()
 
 
@@ -50,7 +50,7 @@ def test_propagate():
     board = Board(2, 2, 0.7)
 
     # First stage changes
-    board.stage_write(0, 0)
+    board.get_dipole(0,0).stage_flip(State.OFF)
 
     # Then calculate probabilities of flipping other dipoles
     board.calc_probs()

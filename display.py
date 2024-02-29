@@ -4,6 +4,7 @@ from board import Board
 from matplotlib.widgets import Button
 from matplotlib.colors import ListedColormap
 from dipole import State
+from calculator import calc_probs_example1
 
 ON_COLOR = 'blue'
 OFF_COLOR = 'red'
@@ -90,12 +91,12 @@ class Display:
 
             # For some reason the x and y coordinates need to be swapped for
             # clicking to work correctly.
-            self.board.stage_write(y, x)
+            self.board.get_dipole(y, x).cycle_stage_flip()
             self.display_staged_writes()
 
             # After flipping a bit we should calculate the probs and display them
             if (self.board.is_dirty()):
-                self.board.calc_probs()
+                calc_probs_example1(self.board)
                 self.display_probs()
             else:
                 self.clear_probs()

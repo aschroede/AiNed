@@ -15,9 +15,15 @@ class Dipole:
         self.dirty = dirty
         self.prob = 0.0
 
-    def stage_flip(self):
+    def cycle_stage_flip(self):
         self.proposed_state = State((self.proposed_state.value + 1) % len(State))
+        self.determine_if_dirty()
 
+    def stage_flip(self, state: State):
+        self.proposed_state = state
+        self.determine_if_dirty()
+
+    def determine_if_dirty(self):
         if (self.proposed_state != self.current_state):
             self.dirty = True
         else:

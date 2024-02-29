@@ -9,7 +9,7 @@ def test_set_dipole_state():
 def test_stage_flip():
     dipole = Dipole(0, 0)
     assert dipole.current_state == State.UNKNOWN
-    dipole.stage_flip()
+    dipole.cycle_stage_flip()
     assert dipole.current_state == State.UNKNOWN
     assert dipole.proposed_state == State.OFF
     assert dipole.dirty
@@ -17,7 +17,7 @@ def test_stage_flip():
 def test_commit_flip():
     dipole = Dipole(0, 0)
     assert dipole.current_state == State.UNKNOWN
-    dipole.stage_flip()
+    dipole.cycle_stage_flip()
     dipole.commit_flip()
     assert dipole.current_state == State.OFF
     assert dipole.proposed_state == State.OFF
