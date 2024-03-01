@@ -4,7 +4,7 @@ from board import Board
 from matplotlib.widgets import Button
 from matplotlib.colors import ListedColormap
 from dipole import State
-from calculator import calc_probs_example1
+from calculator import calc_probs_examples
 
 ON_COLOR = 'blue'
 OFF_COLOR = 'red'
@@ -96,7 +96,7 @@ class Display:
 
             # After flipping a bit we should calculate the probs and display them
             if (self.board.is_dirty()):
-                calc_probs_example1(self.board)
+                calc_probs_examples(self.board)
                 self.display_probs()
             else:
                 self.clear_probs()

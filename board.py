@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.animation as animation
 from matplotlib.animation import FuncAnimation
 from dipole import Dipole
-from calculator import calc_prob, calc_prob_new
+from calculator import calc_prob, calc_prob_example_1
 import random
 from dipole import State
 

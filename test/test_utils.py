@@ -37,6 +37,6 @@ def test_calc_example_1():
     board = Board(2, 2, 0.7)
     board.get_dipole(0, 0).stage_flip(State.ON)
     board.get_dipole(1, 1).stage_flip(State.OFF)
-    calculator.calc_probs_example1(board)
+    calculator.calc_probs_examples(board)
     assert isclose(board.get_dipole(0, 1).prob, 0.21)
     assert isclose(board.get_dipole(1, 0).prob, 0.21)
