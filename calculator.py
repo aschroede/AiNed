@@ -34,9 +34,6 @@ def calc_prob_example_1(dirty_dipoles: set, sink: Dipole, prob):
 
 def calc_terms(dirty_dipoles: set, sink: Dipole, prob, pos_term = True):
 
-    # Assume states of all dirty_dipoles are the same
-    state = next(iter(dirty_dipoles)).proposed_state
-
     # First consider effect of first dirty dipole (B0 = ON)
     terms = []
     coefficients = []
@@ -46,9 +43,6 @@ def calc_terms(dirty_dipoles: set, sink: Dipole, prob, pos_term = True):
         coefficients.append((1 - prob_on) * coefficients[index])
         prob_on *= coefficients[index]
         terms.append(prob_on)
-
-    if state == State.OFF:
-        return 1 - np.sum(terms)
 
     return np.sum(terms)
 
@@ -68,7 +62,7 @@ def calc_probs_examples(board) -> None:
                 if len(positive_dipoles) > 0 and len(negative_dipoles) == 0:
                     prob = calc_terms(positive_dipoles, board.grid[i, j], board.flip_probability)
                 elif len(positive_dipoles) == 0 and len(negative_dipoles) > 0:
-                    prob = calc_terms(negative_dipoles, board.grid[i, j], board.flip_probability)
+                    prob = 1-calc_terms(negative_dipoles, board.grid[i, j], board.flip_probability)
                 else:
                     pos_term = calc_terms(positive_dipoles, board.grid[i, j], board.flip_probability)
                     neg_term = calc_terms(negative_dipoles, board.grid[i, j], board.flip_probability)
