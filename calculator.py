@@ -8,14 +8,15 @@ def manhatten_distance(first: Dipole, second: Dipole):
     y_delta = abs(first.y - second.y)
     return x_delta + y_delta
 
+
 def calc_prob(source: Dipole, sink: Dipole, prob, invert=False):
     distance = manhatten_distance(source, sink)
     if invert:
         return 1 - math.pow(prob, distance)
     return math.pow(prob, distance)
 
-def calc_prob_example_1(dirty_dipoles: set, sink: Dipole, prob):
 
+def calc_prob_example_1(dirty_dipoles: set, sink: Dipole, prob):
     # Calculate prob that sink is set to ON = 2
 
     # First consider effect of first dirty dipole (B0 = ON)
@@ -31,7 +32,7 @@ def calc_prob_example_1(dirty_dipoles: set, sink: Dipole, prob):
     return np.prod(terms)
 
 
-def calc_prob_example_2(dirty_dipoles: set, sink: Dipole, prob):
+def calc_terms(dirty_dipoles: set, sink: Dipole, prob, pos_term = True):
 
     # Assume states of all dirty_dipoles are the same
     state = next(iter(dirty_dipoles)).proposed_state
@@ -42,7 +43,7 @@ def calc_prob_example_2(dirty_dipoles: set, sink: Dipole, prob):
     coefficients.append(1)
     for index, dipole in enumerate(dirty_dipoles):
         prob_on = calc_prob(dipole, sink, prob)
-        coefficients.append((1-prob_on)*coefficients[index])
+        coefficients.append((1 - prob_on) * coefficients[index])
         prob_on *= coefficients[index]
         terms.append(prob_on)
 
@@ -51,6 +52,7 @@ def calc_prob_example_2(dirty_dipoles: set, sink: Dipole, prob):
 
     return np.sum(terms)
 
+
 def calc_probs_examples(board) -> None:
     # Calculate states of static dipoles based on dynamic dipoles and distance
 
@@ -58,8 +60,17 @@ def calc_probs_examples(board) -> None:
     for i in range(board.size_x):
         for j in range(board.size_y):
             if not board.grid[i, j].dirty:
-                prob = calc_prob_example_2(board.get_dirty_dipoles(), board.grid[i, j], board.flip_probability)
+                dirty_dipoles = board.get_dirty_dipoles()
+
+                positive_dipoles = set([dipole for dipole in dirty_dipoles if dipole.proposed_state == State.ON])
+                negative_dipoles = set([dipole for dipole in dirty_dipoles if dipole.proposed_state == State.OFF])
+
+                if len(positive_dipoles) > 0 and len(negative_dipoles) == 0:
+                    prob = calc_terms(positive_dipoles, board.grid[i, j], board.flip_probability)
+                elif len(positive_dipoles) == 0 and len(negative_dipoles) > 0:
+                    prob = calc_terms(negative_dipoles, board.grid[i, j], board.flip_probability)
+                else:
+                    pos_term = calc_terms(positive_dipoles, board.grid[i, j], board.flip_probability)
+                    neg_term = calc_terms(negative_dipoles, board.grid[i, j], board.flip_probability)
+                    prob = pos_term*(1-neg_term)
                 board.grid[i, j].prob = prob
-
-
-
