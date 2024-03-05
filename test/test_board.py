@@ -2,7 +2,7 @@ from numpy.testing import assert_array_equal
 from board import Board
 import numpy as np
 from dipole import Dipole, State
-import calculator
+from calculator import calc_probs_examples
 
 
 def test_get_proposed_states_zeros():
@@ -53,11 +53,12 @@ def test_propagate():
     board.get_dipole(0,0).stage_flip(State.OFF)
 
     # Then calculate probabilities of flipping other dipoles
-    board.calc_probs()
+    calc_probs_examples(board)
 
     # Then commit the changes and propagate them
     board.commit_and_propagate_staged_writes()
 
     actual = board.get_committed_states()
-    expected = np.array([[1, 1], [1, 0]])
+    print(actual)
+    expected = np.array([[1, 0], [1, 0]])
     assert_array_equal(actual, expected)

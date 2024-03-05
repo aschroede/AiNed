@@ -59,12 +59,24 @@ def calc_probs_examples(board) -> None:
                 positive_dipoles = set([dipole for dipole in dirty_dipoles if dipole.proposed_state == State.ON])
                 negative_dipoles = set([dipole for dipole in dirty_dipoles if dipole.proposed_state == State.OFF])
 
+                board.grid[i, j].clear_probs()
+
                 if len(positive_dipoles) > 0 and len(negative_dipoles) == 0:
-                    prob = calc_terms(positive_dipoles, board.grid[i, j], board.flip_probability)
+                    prob_pos = calc_terms(positive_dipoles, board.grid[i, j], board.flip_probability)
+                    board.grid[i, j].prob_on = prob_pos
+                    board.grid[i, j].prob_unchanged = 1-prob_pos
                 elif len(positive_dipoles) == 0 and len(negative_dipoles) > 0:
-                    prob = 1-calc_terms(negative_dipoles, board.grid[i, j], board.flip_probability)
+                    prob_neg = calc_terms(negative_dipoles, board.grid[i, j], board.flip_probability)
+                    board.grid[i, j].prob_off = prob_neg
+                    board.grid[i, j].prob_unchanged = 1-prob_neg
+
                 else:
                     pos_term = calc_terms(positive_dipoles, board.grid[i, j], board.flip_probability)
                     neg_term = calc_terms(negative_dipoles, board.grid[i, j], board.flip_probability)
-                    prob = pos_term*(1-neg_term)
-                board.grid[i, j].prob = prob
+                    prob_pos = pos_term*(1-neg_term)
+                    prob_neg = neg_term*(1-pos_term)
+                    board.grid[i, j].prob_on = prob_pos
+                    board.grid[i, j].prob_off = prob_neg
+                    board.grid[i, j].prob_unchanged = 1-prob_pos-prob_pos
+
+

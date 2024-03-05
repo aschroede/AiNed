@@ -11,6 +11,7 @@ OFF_COLOR = 'red'
 UNKNOWN_COLOR = 'black'
 DIRTY_COLOR = 'purple'
 TEXT_COLOR = 'white'
+color_labels = {0: 'Unknown', 1: 'Off', 2: 'On'}
 
 
 class Display:
@@ -34,8 +35,13 @@ class Display:
         plt.yticks(np.arange(0, board.size_y + 1, 1))
         plt.gca().set_aspect('equal', adjustable='box')
 
+
+        cbar = plt.colorbar(self.im, ticks=np.arange(len(self.colors)), pad=0.05, fraction=0.20)
+        cbar.ax.set_yticklabels([color_labels[i] for i in range(len(self.colors))])
+        cbar.set_label('State')
+
         self.fig.canvas.mpl_connect('button_press_event', self.on_click)
-        self.propagate_button = Button(plt.axes([0.8, 0.01, 0.15, 0.05]), 'Commit Writes')
+        self.propagate_button = Button(plt.axes([0.8, 0.01, 0.15, 0.05]), 'Commit Writes', color='0.85', hovercolor='0.95')
         self.propagate_button.on_clicked(self.commit_staged_writes)
 
         plt.show()
@@ -53,7 +59,9 @@ class Display:
         for i in range(self.board.size_x):
             for j in range(self.board.size_y):
                 if (self.board.get_dipole(i, j).dirty == False):
-                    self.ax.text(j + 0.5, i + 0.5, f'{self.board.get_dipole(i, j).prob:.2f}', ha='center', va='center',
+                    self.ax.text(j + 0.5, i + 0.5,
+                                 f'{self.board.get_dipole(i, j).prob_unchanged:.2f}/{self.board.get_dipole(i, j).prob_off:.2f}/{self.board.get_dipole(i, j).prob_on:.2f}',
+                                 ha='center', va='center',
                                  color=TEXT_COLOR,
                                  fontsize=8)
         self.fig.canvas.draw()

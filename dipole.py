@@ -1,4 +1,5 @@
 from enum import Enum
+import random
 
 
 class State(Enum):
@@ -13,7 +14,13 @@ class Dipole:
         self.current_state = State.UNKNOWN
         self.proposed_state = State.UNKNOWN
         self.dirty = dirty
-        self.prob = 0.0
+        self.prob_on = 0.0
+        self.prob_off = 0.0
+        self.prob_unchanged = 0.0
+
+    def clear_probs(self):
+        self.prob_on = 0
+        self.prob_off = 0
 
     def cycle_stage_flip(self):
         self.proposed_state = State((self.proposed_state.value + 1) % len(State))
@@ -40,3 +47,11 @@ class Dipole:
 
     def reset_dirty(self):
         self.dirty = False
+
+    def propagate(self) -> None:
+        x = random.random()
+        if x <= self.prob_off:
+            self.set_current_state(State.OFF)
+
+        elif self.prob_off < x <= self.prob_off + self.prob_on:
+            self.set_current_state(State.ON)
