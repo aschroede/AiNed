@@ -1,17 +1,16 @@
 import numpy as np
-import matplotlib.animation as animation
-from matplotlib.animation import FuncAnimation
 from dipole import Dipole
-from calculator import calc_prob
+from historymanager import HistoryManager
 import random
 from dipole import State
 
 
 class Board:
-    def __init__(self, size_x, size_y, flip_probability):
+    def __init__(self, size_x, size_y, flip_probability, history):
         self.size_x = size_x
         self.size_y = size_y
         self.flip_probability = flip_probability
+        self.history_manager = history
         self.grid = np.zeros((size_x, size_y), dtype=Dipole)
         self.initialize_grid()
         random.seed(1234567)
@@ -42,11 +41,15 @@ class Board:
         dirty_dipoles = self.get_dirty_dipoles()
         for dd in dirty_dipoles:
             dd.commit_flip()
+            assert isinstance(dd, Dipole)
+            self.history_manager.record_write(dd)
 
             for i in range(self.size_x):
                 for j in range(self.size_y):
                     if self.grid[i, j] not in dirty_dipoles:
                         self.grid[i,j].propagate()
+
+        self.history_manager.record_board(self.get_committed_states())
 
     def is_dirty(self) -> bool:
         return len(self.get_dirty_dipoles()) > 0
