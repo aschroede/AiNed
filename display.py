@@ -34,6 +34,7 @@ class Display:
         plt.xticks(np.arange(0, board.size_x + 1, 1))
         plt.yticks(np.arange(0, board.size_y + 1, 1))
         plt.gca().set_aspect('equal', adjustable='box')
+        plt.gca().invert_yaxis()
 
 
         cbar = plt.colorbar(self.im, ticks=np.arange(len(self.colors)), pad=0.05, fraction=0.20)
@@ -41,14 +42,21 @@ class Display:
         cbar.set_label('State')
 
         self.fig.canvas.mpl_connect('button_press_event', self.on_click)
+
         self.propagate_button = Button(plt.axes([0.8, 0.01, 0.15, 0.05]), 'Commit Writes', color='0.85', hovercolor='0.95')
         self.propagate_button.on_clicked(self.commit_staged_writes)
+        self.save_button = Button(plt.axes([0.6, 0.01, 0.15, 0.05]), 'Save History', color='0.85', hovercolor='0.95')
+        self.save_button.on_clicked(self.save_history)
+
 
         plt.show()
 
     def commit_staged_writes(self, event):
         self.board.commit_and_propagate_staged_writes()
         self.display_committed_writes()
+
+    def save_history(self, event):
+        self.board.history_manager.export_to_file()
 
     def clear_probs(self):
         self.ax.texts.clear()

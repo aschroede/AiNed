@@ -3,17 +3,20 @@ from board import Board
 import numpy as np
 from dipole import Dipole, State
 from calculator import calc_probs_examples
+from historymanager import HistoryManager
 
 
 def test_get_proposed_states_zeros():
-    board = Board(2, 2, 0.7)
+    history_manager = HistoryManager()
+    board = Board(2, 2, 0.7, history_manager)
     actual = board.get_proposed_states()
     expected = np.zeros((2, 2))
     assert_array_equal(actual, expected)
 
 
 def test_stage_and_commit_changes():
-    board = Board(2, 2, 0.7)
+    history_manager = HistoryManager()
+    board = Board(2, 2, 0.7, history_manager)
     actual = board.get_committed_states()
     expected = np.zeros((2, 2))
     assert_array_equal(actual, expected)
@@ -32,7 +35,8 @@ def test_stage_and_commit_changes():
 
 
 def test_stage_write():
-    board = Board(2, 2, 0.7)
+    history_manager = HistoryManager()
+    board = Board(2, 2, 0.7, history_manager)
     board.get_dipole(0,0).stage_flip(State.OFF)
     expected = np.zeros((2, 2))
     expected[0, 0] = 1
@@ -40,14 +44,16 @@ def test_stage_write():
 
 
 def test_board_dirty():
-    board = Board(2, 2, 0.7)
+    history_manager = HistoryManager()
+    board = Board(2, 2, 0.7, history_manager)
     assert not board.is_dirty()
     board.get_dipole(0,0).stage_flip(State.ON)
     assert board.is_dirty()
 
 
 def test_propagate():
-    board = Board(2, 2, 0.7)
+    history_manager = HistoryManager()
+    board = Board(2, 2, 0.7, history_manager)
 
     # First stage changes
     board.get_dipole(0,0).stage_flip(State.OFF)

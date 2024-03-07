@@ -13,6 +13,7 @@ class Board:
         self.history_manager = history
         self.grid = np.zeros((size_x, size_y), dtype=Dipole)
         self.initialize_grid()
+        self.history_manager.record_board(self.get_committed_states())
         random.seed(1234567)
 
     def initialize_grid(self):
@@ -41,14 +42,14 @@ class Board:
         dirty_dipoles = self.get_dirty_dipoles()
         for dd in dirty_dipoles:
             dd.commit_flip()
-            assert isinstance(dd, Dipole)
-            self.history_manager.record_write(dd)
 
             for i in range(self.size_x):
                 for j in range(self.size_y):
                     if self.grid[i, j] not in dirty_dipoles:
                         self.grid[i,j].propagate()
 
+        # Update history
+        self.history_manager.record_writes(dirty_dipoles)
         self.history_manager.record_board(self.get_committed_states())
 
     def is_dirty(self) -> bool:
