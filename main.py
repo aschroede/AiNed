@@ -1,9 +1,29 @@
 from board import Board
 from display import Display
 from historymanager import HistoryManager
+import typer
+
+app = typer.Typer()
+
+historymanager = None
+board = None
+@app.command()
+def initialize(
+        rows: int,
+        columns: int,
+        probability: float = 0.7,
+        output: str = None):
+
+    history_manager = HistoryManager(output)
+    board = Board(size_x=rows, size_y=columns, flip_probability=probability, history=history_manager)
+
+@app.command()
+def render():
+    Display(board)
 
 
-history_manager = HistoryManager()
-board = Board(size_x=8, size_y=8, flip_probability=0.7, history=history_manager)
-display = Display(board)
+if __name__ == "__main__":
+    app()
+
+
 
