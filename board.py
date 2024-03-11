@@ -3,6 +3,7 @@ from dipole import Dipole
 from historymanager import HistoryManager
 import random
 from dipole import State
+from calculator import calc_probs_examples
 
 
 class Board:
@@ -39,6 +40,7 @@ class Board:
         return states
 
     def commit_and_propagate_staged_writes(self) -> None:
+
         dirty_dipoles = self.get_dirty_dipoles()
         for dd in dirty_dipoles:
             dd.commit_flip()

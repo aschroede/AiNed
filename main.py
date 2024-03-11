@@ -2,11 +2,14 @@ from board import Board
 from display import Display
 from historymanager import HistoryManager
 import typer
+from jsonschema import validate
+import json
+import os
 
 app = typer.Typer()
 
-historymanager = None
-board = None
+
+
 @app.command()
 def initialize(
         rows: int,
@@ -22,8 +25,8 @@ def render():
     Display(board)
 
 
-if __name__ == "__main__":
-    app()
+# if __name__ == "__main__":
+#     app()
 
 
 
