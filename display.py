@@ -102,17 +102,37 @@ class Display:
         self.fig.canvas.draw()
 
     def on_click(self, event):
+
         if event.inaxes == self.ax:
-            x, y = int(event.xdata), int(event.ydata)
+            
+            # If we right click on a cell it means we want to push the same value to that cell
+            if event.button == 3:
+                x, y = int(event.xdata), int(event.ydata)
 
-            # For some reason the x and y coordinates need to be swapped for
-            # clicking to work correctly.
-            self.board.get_dipole(y, x).cycle_stage_flip()
-            self.display_staged_writes()
+                # For some reason the x and y coordinates need to be swapped for
+                # clicking to work correctly.
+                self.board.get_dipole(y, x).set_dirty()
+                self.display_staged_writes()
 
-            # After flipping a bit we should calculate the probs and display them
-            if (self.board.is_dirty()):
-                calc_probs_examples(self.board)
-                self.display_probs()
+                # After flipping a bit we should calculate the probs and display them
+                if (self.board.is_dirty()):
+                    calc_probs_examples(self.board)
+                    self.display_probs()
+                else:
+                    self.clear_probs()
+                
+            # Otherwise if it is a left click we want to cycle through the values
             else:
-                self.clear_probs()
+                x, y = int(event.xdata), int(event.ydata)
+
+                # For some reason the x and y coordinates need to be swapped for
+                # clicking to work correctly.
+                self.board.get_dipole(y, x).cycle_stage_flip()
+                self.display_staged_writes()
+
+                # After flipping a bit we should calculate the probs and display them
+                if (self.board.is_dirty()):
+                    calc_probs_examples(self.board)
+                    self.display_probs()
+                else:
+                    self.clear_probs()

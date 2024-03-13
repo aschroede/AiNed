@@ -26,9 +26,23 @@ class Dipole:
         self.proposed_state = State((self.proposed_state.value + 1) % len(State))
         self.determine_if_dirty()
 
-    def stage_flip(self, state: State):
+    # If calling from command line, make_dirty is set to false so that if we are actually changing the state
+    # then dirty is true, and if we are just reinforcing by writing the same state we still set dirty to true. 
+    # It's a bit hacky and I don't like it - but it works for now
+    def stage_flip(self, state: State, make_dirty=False):
         self.proposed_state = state
-        self.determine_if_dirty()
+        if make_dirty:
+            self.dirty = True
+        else:
+            self.determine_if_dirty()
+
+    # Method called when right clicking in GUI. Whether a bit is truly dirty or not is not relevant.
+    # If a bit is OFF, and we write OFF to it again, we are doing a "Reinforce" operation and this bit
+    # should be treated as if it has just been written to. Reinforce operations always mean that the 
+    # proposed state is the same as the current state
+    def set_dirty(self):
+        self.dirty = True
+        self.proposed_state = self.current_state
 
     def determine_if_dirty(self):
         if (self.proposed_state != self.current_state):
@@ -47,6 +61,8 @@ class Dipole:
 
     def reset_dirty(self):
         self.dirty = False
+
+    
 
     def propagate(self) -> None:
         x = random.random()

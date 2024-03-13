@@ -25,16 +25,11 @@ def load_json(filename):
 
     return data
 
-def process_board_data(data):
+def process_board_data(data, board):
     board_properties = data["boardProperties"]
     rows = board_properties["rows"]
     columns = board_properties["columns"]
     prob = board_properties["probability"]
-
-    history_manager = HistoryManager("test.txt")
-    board = Board(size_x=rows, size_y=columns, flip_probability=prob, history=history_manager)
-
-
     timesteps = data["timesteps"]
     
     # Example processing: print board properties and timesteps
@@ -46,7 +41,7 @@ def process_board_data(data):
             x = change['x']
             y = change['y']
             state = change['state']
-            board.get_dipole(x, y).stage_flip(State(state))
+            board.get_dipole(x, y).stage_flip(State(state), make_dirty=True)
 
         # Then calculate probabilities of flipping other dipoles
         calc_probs_examples(board)
@@ -58,6 +53,4 @@ def process_board_data(data):
 
 
 
-# Assuming your JSON data is stored in 'board_data.json'
-data = load_json('exampleData.json')
-process_board_data(data)
+
