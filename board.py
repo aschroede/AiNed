@@ -41,26 +41,26 @@ class Board:
 
     def commit_and_propagate_staged_writes(self) -> None:
 
-        dirty_dipoles = self.get_dirty_dipoles()
-        for dd in dirty_dipoles:
+        changed_dipoles = self.get_changed_dipoles()
+        for dd in changed_dipoles:
             dd.commit_flip()
 
             for i in range(self.size_x):
                 for j in range(self.size_y):
-                    if self.grid[i, j] not in dirty_dipoles:
+                    if self.grid[i, j] not in changed_dipoles:
                         self.grid[i,j].propagate()
 
         # Update history
-        self.history_manager.record_writes(dirty_dipoles)
+        self.history_manager.record_writes(changed_dipoles)
         self.history_manager.record_board(self.get_committed_states())
 
-    def is_dirty(self) -> bool:
-        return len(self.get_dirty_dipoles()) > 0
+    def is_changed(self) -> bool:
+        return len(self.get_changed_dipoles()) > 0
 
-    def get_dirty_dipoles(self) -> list:
-        dirty = []
+    def get_changed_dipoles(self) -> list:
+        changed = []
         for i in range(self.size_x):
             for j in range(self.size_y):
-                if self.grid[i, j].dirty == True:
-                    dirty.append(self.grid[i, j])
-        return dirty
+                if self.grid[i, j].dirty or self.grid[i, j].reinforced:
+                    changed.append(self.grid[i, j])
+        return changed

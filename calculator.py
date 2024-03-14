@@ -54,10 +54,10 @@ def calc_probs_examples(board) -> None:
     for i in range(board.size_x):
         for j in range(board.size_y):
             if not board.grid[i, j].dirty:
-                dirty_dipoles = board.get_dirty_dipoles()
+                changed_dipoles = board.get_changed_dipoles()
 
-                positive_dipoles = set([dipole for dipole in dirty_dipoles if dipole.proposed_state == State.ON])
-                negative_dipoles = set([dipole for dipole in dirty_dipoles if dipole.proposed_state == State.OFF])
+                positive_dipoles = set([dipole for dipole in changed_dipoles if dipole.proposed_state == State.ON])
+                negative_dipoles = set([dipole for dipole in changed_dipoles if dipole.proposed_state == State.OFF])
 
                 board.grid[i, j].clear_probs()
 

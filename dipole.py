@@ -13,7 +13,13 @@ class Dipole:
         self.y = y
         self.current_state = State.UNKNOWN
         self.proposed_state = State.UNKNOWN
+
+        # The dirty flag is set if the proposed state is different from the current state
         self.dirty = dirty
+        # The reinforced flag is set if we want to write a state to the dipole that is the same as the current state
+        # and "reinforce" it.
+        self.reinforced = False
+
         self.prob_on = 0.0
         self.prob_off = 0.0
         self.prob_unchanged = 0.0
@@ -22,27 +28,25 @@ class Dipole:
         self.prob_on = 0
         self.prob_off = 0
 
-    def cycle_stage_flip(self):
+    def cycle_states(self):
         self.proposed_state = State((self.proposed_state.value + 1) % len(State))
         self.determine_if_dirty()
 
     # If calling from command line, make_dirty is set to false so that if we are actually changing the state
     # then dirty is true, and if we are just reinforcing by writing the same state we still set dirty to true. 
     # It's a bit hacky and I don't like it - but it works for now
-    def stage_flip(self, state: State, make_dirty=False):
+    def stage_flip(self, state: State):
         self.proposed_state = state
-        if make_dirty:
-            self.dirty = True
-        else:
-            self.determine_if_dirty()
+        self.determine_if_dirty()
 
-    # Method called when right-clicking in GUI. Whether a bit is truly dirty or not is not relevant.
-    # If a bit is OFF, and we write OFF to it again, we are doing a "Reinforce" operation and this bit
-    # should be treated as if it has just been written to. Reinforce operations always mean that the 
-    # proposed state is the same as the current state
-    def set_dirty(self):
-        self.dirty = True
-        self.proposed_state = self.current_state
+    def reinforce(self):
+        self.reinforced = True
+
+    def toggle_reinforce(self):
+        if self.reinforced:
+            self.reinforced = False
+        else:
+            self.reinforced = True
 
     def determine_if_dirty(self):
         if (self.proposed_state != self.current_state):
@@ -55,14 +59,10 @@ class Dipole:
         self.proposed_state = self.current_state
 
     def commit_flip(self):
-        if (self.dirty):
-            self.current_state = self.proposed_state
-            self.dirty = False
-
-    def reset_dirty(self):
+        self.current_state = self.proposed_state
         self.dirty = False
+        self.reinforced = False
 
-    
 
     def propagate(self) -> None:
         x = random.random()

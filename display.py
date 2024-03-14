@@ -38,18 +38,17 @@ class Display:
         plt.gca().set_aspect('equal', adjustable='box')
         plt.gca().invert_yaxis()
 
-
         cbar = plt.colorbar(self.im, ticks=np.arange(len(self.colors)), pad=0.05, fraction=0.20)
         cbar.ax.set_yticklabels([color_labels[i] for i in range(len(self.colors))])
         cbar.set_label('State')
 
         self.fig.canvas.mpl_connect('button_press_event', self.on_click)
 
-        self.propagate_button = Button(plt.axes([0.8, 0.01, 0.15, 0.05]), 'Commit Writes', color='0.85', hovercolor='0.95')
+        self.propagate_button = Button(plt.axes([0.8, 0.01, 0.15, 0.05]), 'Commit Writes', color='0.85',
+                                       hovercolor='0.95')
         self.propagate_button.on_clicked(self.commit_staged_writes)
         self.save_button = Button(plt.axes([0.6, 0.01, 0.15, 0.05]), 'Save History', color='0.85', hovercolor='0.95')
         self.save_button.on_clicked(self.save_history)
-
 
         plt.show()
 
@@ -67,10 +66,12 @@ class Display:
         self.fig.canvas.draw()
 
     def display_probs(self):
+
+        changed_dipoles = self.board.get_changed_dipoles()
         self.ax.texts.clear()  # Clear previous text annotations
         for i in range(self.board.size_x):
             for j in range(self.board.size_y):
-                if (self.board.get_dipole(i, j).dirty == False):
+                if (self.board.get_dipole(i, j) not in changed_dipoles):
                     self.ax.text(j + 0.5, i + 0.5,
                                  f'{self.board.get_dipole(i, j).prob_unchanged:.2f}/{self.board.get_dipole(i, j).prob_off:.2f}/{self.board.get_dipole(i, j).prob_on:.2f}',
                                  ha='center', va='center',
@@ -92,12 +93,11 @@ class Display:
         self.im.set_data(states)
 
         # Create a list of colored rectangles for dirty dipoles
+        changed_dipoles = self.board.get_changed_dipoles()
         dirty_patches = []
-        for i in range(self.board.size_x):
-            for j in range(self.board.size_y):
-                if self.board.get_dipole(i, j).dirty:
-                    patch = plt.Rectangle((j, i), 1, 1, linewidth=3, edgecolor=DIRTY_COLOR, facecolor='none')
-                    dirty_patches.append(patch)
+        for dipole in changed_dipoles:
+            patch = plt.Rectangle((dipole.y, dipole.x), 1, 1, linewidth=3, edgecolor=DIRTY_COLOR, facecolor='none')
+            dirty_patches.append(patch)
 
         # Clear the previous dirty patches and add the new ones
         for patch in dirty_patches:
@@ -108,34 +108,34 @@ class Display:
     def on_click(self, event):
 
         if event.inaxes == self.ax:
-            
-            # If we right click on a cell it means we want to push the same value to that cell
+
+            # If we right-click on a cell it means we want to reinforce the dipole
             if event.button == 3:
                 x, y = int(event.xdata), int(event.ydata)
 
                 # For some reason the x and y coordinates need to be swapped for
                 # clicking to work correctly.
-                self.board.get_dipole(y, x).set_dirty()
+                self.board.get_dipole(y, x).toggle_reinforce()
                 self.display_staged_writes()
 
                 # After flipping a bit we should calculate the probs and display them
-                if (self.board.is_dirty()):
+                if self.board.is_changed():
                     calc_probs_examples(self.board)
                     self.display_probs()
                 else:
                     self.clear_probs()
-                
+
             # Otherwise if it is a left click we want to cycle through the values
             else:
                 x, y = int(event.xdata), int(event.ydata)
 
                 # For some reason the x and y coordinates need to be swapped for
                 # clicking to work correctly.
-                self.board.get_dipole(y, x).cycle_stage_flip()
+                self.board.get_dipole(y, x).cycle_states()
                 self.display_staged_writes()
 
                 # After flipping a bit we should calculate the probs and display them
-                if (self.board.is_dirty()):
+                if (self.board.is_changed()):
                     calc_probs_examples(self.board)
                     self.display_probs()
                 else:

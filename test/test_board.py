@@ -46,9 +46,9 @@ def test_stage_write():
 def test_board_dirty():
     history_manager = HistoryManager()
     board = Board(2, 2, 0.7, history_manager)
-    assert not board.is_dirty()
+    assert not board.is_changed()
     board.get_dipole(0,0).stage_flip(State.ON)
-    assert board.is_dirty()
+    assert board.is_changed()
 
 
 def test_propagate():

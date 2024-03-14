@@ -1,4 +1,3 @@
-import json
 import os
 from jsonschema import validate
 import json
@@ -8,8 +7,7 @@ from dipole import Dipole, State
 from calculator import calc_probs_examples
 
 
-
-def load_json(filename):
+def load_and_validate_json(filename):
     base_dir = os.path.dirname(__file__)
     rel_path = "Data"
     schema_file_path = os.path.join(base_dir, rel_path, "jasonSchema.json")
@@ -23,6 +21,7 @@ def load_json(filename):
     validate(instance=data, schema=schema)
 
     return data
+
 
 def process_board_data(data, output):
     board_properties = data["boardProperties"]
@@ -41,16 +40,18 @@ def process_board_data(data, output):
         for change in timestep['changes']:
             x = change['x']
             y = change['y']
-            state = change['state']
-            board.get_dipole(x, y).stage_flip(State(state), make_dirty=True)
+            proposed = change['state']
+            current = board.get_dipole(x, y).current_state
+
+            if proposed == current:
+                # Reinforce operation
+                board.get_dipole(x, y).reinforce()
+            else:
+                # Dirty operation (proposed state is different from current state)
+                board.get_dipole(x, y).stage_flip(State(proposed))
+
         # Then calculate probabilities of flipping other dipoles
         calc_probs_examples(board)
         board.commit_and_propagate_staged_writes()
 
     board.history_manager.export_to_file(output)
-
-
-
-
-
-
