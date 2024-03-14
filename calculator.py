@@ -65,6 +65,7 @@ def calc_probs_examples(board) -> None:
                     prob_pos = calc_terms(positive_dipoles, board.grid[i, j], board.flip_probability)
                     board.grid[i, j].prob_on = prob_pos
                     board.grid[i, j].prob_unchanged = 1-prob_pos
+
                 elif len(positive_dipoles) == 0 and len(negative_dipoles) > 0:
                     prob_neg = calc_terms(negative_dipoles, board.grid[i, j], board.flip_probability)
                     board.grid[i, j].prob_off = prob_neg

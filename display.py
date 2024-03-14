@@ -5,6 +5,8 @@ from matplotlib.widgets import Button
 from matplotlib.colors import ListedColormap
 from dipole import State
 from calculator import calc_probs_examples
+from tkinter.filedialog import asksaveasfilename
+import tkinter as tk
 
 ON_COLOR = 'blue'
 OFF_COLOR = 'red'
@@ -56,7 +58,9 @@ class Display:
         self.display_committed_writes()
 
     def save_history(self, event):
-        self.board.history_manager.export_to_file()
+        tk.Tk().withdraw()
+        filename = asksaveasfilename()
+        self.board.history_manager.export_to_file(filename)
 
     def clear_probs(self):
         self.ax.texts.clear()

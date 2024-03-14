@@ -4,11 +4,10 @@ import os
 
 class HistoryManager:
 
-    def __init__(self, output_file = None):
+    def __init__(self):
         self.board_history = []
         self.write_history = []
-        self.output_file = output_file
-        
+
     def record_board(self, board_state):
         self.board_history.append(board_state)
 
@@ -23,16 +22,13 @@ class HistoryManager:
         self.board_history.clear()
         self.write_history.clear()
 
-    def export_to_file(self):
+    def export_to_file(self, filepath):
 
-        if self.output_file == None:
-            self.output_file = "history.txt"
-        else:
-            directory = os.path.dirname(self.output_file)
-            if directory:
-                os.makedirs(directory, exist_ok=True)
+        directory = os.path.dirname(filepath)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
 
-        with open(self.output_file, 'w') as file:
+        with open(filepath, 'w') as file:
             timestep = 1
             file.write(str(self.board_history[0])+'\n')
 
@@ -41,8 +37,3 @@ class HistoryManager:
                 file.write("Writes: " + str(item)+'\n')
                 file.write(str(self.board_history[timestep])+'\n')
                 timestep += 1
-
-
-        
-    def save_history_to_file(self):
-        pass

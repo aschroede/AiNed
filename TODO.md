@@ -6,7 +6,7 @@
 3. ~~Write unit tests for scenarios where there is only one dirty dipole~~
 4. ~~Update code to handle calculations for multiple dirty dipoles~~
 6. ~~Make sure you can write sequence of read-writes and states out to a file for comparison with testing guys~~
-7. Make a CLI interface
+7. ~~Make a CLI interface~~
    - Initialise parameters
       - Width and height
       - Probability 
@@ -17,9 +17,10 @@
       - Pass in a series of writes
 10. Make sure you can read in an initial set of values for a grid
 8. Make sure you are not allowed to set dipole to unknown
-9. Make sure you can write a state to a dipole that is already in that states (blue -> blue, red -> red)
-10. Make sure results are reproducible with a seed
+9. ~~Make sure you can write a state to a dipole that is already in that states (blue -> blue, red -> red)~~
+10. ~~Make sure results are reproducible with a seed~~
 11. Make sure to use only integer values?
+12. Clean up reinforce code
 
 # Passing in Writes
 

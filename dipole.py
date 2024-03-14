@@ -36,7 +36,7 @@ class Dipole:
         else:
             self.determine_if_dirty()
 
-    # Method called when right clicking in GUI. Whether a bit is truly dirty or not is not relevant.
+    # Method called when right-clicking in GUI. Whether a bit is truly dirty or not is not relevant.
     # If a bit is OFF, and we write OFF to it again, we are doing a "Reinforce" operation and this bit
     # should be treated as if it has just been written to. Reinforce operations always mean that the 
     # proposed state is the same as the current state
