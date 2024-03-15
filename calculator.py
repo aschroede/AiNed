@@ -9,32 +9,13 @@ def manhatten_distance(first: Dipole, second: Dipole):
     return x_delta + y_delta
 
 
-def calc_prob(source: Dipole, sink: Dipole, prob, invert=False):
+def calc_prob(source: Dipole, sink: Dipole, prob):
     distance = manhatten_distance(source, sink)
-    if invert:
-        return 1 - math.pow(prob, distance)
     return math.pow(prob, distance)
-
-
-def calc_prob_example_1(dirty_dipoles: set, sink: Dipole, prob):
-    # Calculate prob that sink is set to ON = 2
-
-    # First consider effect of first dirty dipole (B0 = ON)
-    terms = []
-    for dipole in dirty_dipoles:
-        if dipole.proposed_state == State.ON:
-            prob_on = calc_prob(dipole, sink, prob)
-            terms.append(prob_on)
-        elif dipole.proposed_state == State.OFF:
-            prob_on = calc_prob(dipole, sink, prob, invert=True)
-            terms.append(prob_on)
-
-    return np.prod(terms)
 
 
 def calc_terms(dirty_dipoles: set, sink: Dipole, prob, pos_term = True):
 
-    # First consider effect of first dirty dipole (B0 = ON)
     terms = []
     coefficients = []
     coefficients.append(1)
@@ -47,7 +28,7 @@ def calc_terms(dirty_dipoles: set, sink: Dipole, prob, pos_term = True):
     return np.sum(terms)
 
 
-def calc_probs_examples(board) -> None:
+def calc_all_probs(board) -> None:
     # Calculate states of static dipoles based on dynamic dipoles and distance
 
     # Using the dirty bits, calculate if the static bits should change
@@ -78,6 +59,6 @@ def calc_probs_examples(board) -> None:
                     prob_neg = neg_term*(1-pos_term)
                     board.grid[i, j].prob_on = prob_pos
                     board.grid[i, j].prob_off = prob_neg
-                    board.grid[i, j].prob_unchanged = 1-prob_pos-prob_pos
+                    board.grid[i, j].prob_unchanged = 1-prob_pos-prob_neg
 
 

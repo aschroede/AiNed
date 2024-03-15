@@ -3,7 +3,7 @@ from dipole import Dipole
 from historymanager import HistoryManager
 import random
 from dipole import State
-from calculator import calc_probs_examples
+from calculator import calc_all_probs
 
 
 class Board:

@@ -4,7 +4,7 @@ import json
 from board import Board
 from historymanager import HistoryManager
 from dipole import Dipole, State
-from calculator import calc_probs_examples
+from calculator import calc_all_probs
 
 
 def load_and_validate_json(filename):
@@ -24,6 +24,8 @@ def load_and_validate_json(filename):
 
 
 def process_board_data(data, output):
+    
+    
     board_properties = data["boardProperties"]
     rows = board_properties["rows"]
     columns = board_properties["columns"]
@@ -51,7 +53,7 @@ def process_board_data(data, output):
                 board.get_dipole(x, y).stage_flip(State(proposed))
 
         # Then calculate probabilities of flipping other dipoles
-        calc_probs_examples(board)
+        calc_all_probs(board)
         board.commit_and_propagate_staged_writes()
 
     board.history_manager.export_to_file(output)
