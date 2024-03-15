@@ -64,10 +64,8 @@ class Dipole:
         self.reinforced = False
 
 
-    def propagate(self) -> None:
-        x = random.random()
+    def propagate(self, x: int) -> None:
         if x <= self.prob_off:
             self.set_current_state(State.OFF)
-
         elif self.prob_off < x <= self.prob_off + self.prob_on:
             self.set_current_state(State.ON)

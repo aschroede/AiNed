@@ -4,19 +4,19 @@ import numpy as np
 from dipole import Dipole, State
 from calculator import calc_all_probs
 from historymanager import HistoryManager
+from generator import RandomIntGenerator
 
+random_gen = RandomIntGenerator(0, 100, 123456)
 
 def test_get_proposed_states_zeros():
-    history_manager = HistoryManager()
-    board = Board(2, 2, 0.7, history_manager)
+    board = Board(2, 2, 0.7, random_gen)
     actual = board.get_proposed_states()
     expected = np.zeros((2, 2))
     assert_array_equal(actual, expected)
 
 
 def test_stage_and_commit_changes():
-    history_manager = HistoryManager()
-    board = Board(2, 2, 0.7, history_manager)
+    board = Board(2, 2, 0.7, random_gen)
     actual = board.get_committed_states()
     expected = np.zeros((2, 2))
     assert_array_equal(actual, expected)
@@ -35,8 +35,7 @@ def test_stage_and_commit_changes():
 
 
 def test_stage_write():
-    history_manager = HistoryManager()
-    board = Board(2, 2, 0.7, history_manager)
+    board = Board(2, 2, 0.7, random_gen)
     board.get_dipole(0,0).stage_flip(State.OFF)
     expected = np.zeros((2, 2))
     expected[0, 0] = 1
@@ -44,16 +43,14 @@ def test_stage_write():
 
 
 def test_board_dirty():
-    history_manager = HistoryManager()
-    board = Board(2, 2, 0.7, history_manager)
+    board = Board(2, 2, 0.7, random_gen)
     assert not board.is_changed()
     board.get_dipole(0,0).stage_flip(State.ON)
     assert board.is_changed()
 
 
 def test_propagate():
-    history_manager = HistoryManager()
-    board = Board(2, 2, 0.7, history_manager)
+    board = Board(2, 2, 0.7, random_gen)
 
     # First stage changes
     board.get_dipole(0,0).stage_flip(State.OFF)
@@ -66,5 +63,5 @@ def test_propagate():
 
     actual = board.get_committed_states()
     print(actual)
-    expected = np.array([[1, 0], [1, 0]])
+    expected = np.array([[1, 1], [0, 0]])
     assert_array_equal(actual, expected)

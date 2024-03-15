@@ -2,20 +2,24 @@ import numpy as np
 from dipole import Dipole
 from historymanager import HistoryManager
 import random
+from generator import IGenerator
 from dipole import State
 from calculator import calc_all_probs
 
 
 class Board:
-    def __init__(self, size_x, size_y, flip_probability, history):
+    def __init__(self, size_x, size_y, flip_probability, generator: IGenerator):
         self.size_x = size_x
         self.size_y = size_y
         self.flip_probability = flip_probability
-        self.history_manager = history
+        self.history_manager = HistoryManager()
         self.grid = np.zeros((size_x, size_y), dtype=Dipole)
         self.initialize_grid()
+        self.generator = generator
+
+        # Record initial board state
         self.history_manager.record_board(self.get_committed_states())
-        random.seed(1234567)
+
 
     def initialize_grid(self):
         for i in range(self.size_x):
@@ -48,7 +52,8 @@ class Board:
             for i in range(self.size_x):
                 for j in range(self.size_y):
                     if self.grid[i, j] not in changed_dipoles:
-                        self.grid[i,j].propagate()
+                        number = self.generator.get_random()
+                        self.grid[i,j].propagate(number)
 
         # Update history
         self.history_manager.record_writes(changed_dipoles)
