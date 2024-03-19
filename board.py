@@ -52,7 +52,8 @@ class Board:
             for i in range(self.size_x):
                 for j in range(self.size_y):
                     if self.grid[i, j] not in changed_dipoles:
-                        number = self.generator.get_random()
+                        # Generators return numbers in range 0 to 100
+                        number = self.generator.get_random() / 100
                         self.grid[i,j].propagate(number)
 
         # Update history

@@ -42,7 +42,7 @@ def process_board_data(data, output, random_generator: IGenerator):
             x = change['x']
             y = change['y']
             proposed = change['state']
-            current = board.get_dipole(x, y).current_state
+            current = board.get_dipole(x, y).current_state.value
 
             if proposed == current:
                 # Reinforce operation
