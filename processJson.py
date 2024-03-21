@@ -29,11 +29,12 @@ def process_board_data(data, output, random_generator: IGenerator):
     rows = board_properties["rows"]
     columns = board_properties["columns"]
     prob = board_properties["probability"]
+    initial_states = board_properties["initialState"]
     timesteps = data["timesteps"]
 
     # Build board
     history_manager = HistoryManager()
-    board = Board(size_x=rows, size_y=columns, flip_probability=prob, generator=random_generator)
+    board = Board(size_x=rows, size_y=columns, flip_probability=prob, generator=random_generator, initial_states = initial_states)
 
     # Apply changes for each timestep
     for timestep in timesteps:

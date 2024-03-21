@@ -15,9 +15,7 @@ app = typer.Typer()
 def process_file(
         input_file: Annotated[str, typer.Argument(help="File path to JSON file to process.")],
         output_file: Annotated[str, typer.Argument(help="File path to save results to.")],
-        random_file: Annotated[Optional[str], typer.Argument(help="File with random numbers to use for file processing. "
-                                                                  "Note that such a file can be generated using the generatenumbes"
-                                                                  "command")]):
+        random_file: Annotated[Optional[str], typer.Argument(help="File with random numbers to use for file processing. Note that such a file can be generated using the generatenumbes command")]):
     """
     Read in a json file (input) with a board properties and a series of writes. Save results to output.
     """

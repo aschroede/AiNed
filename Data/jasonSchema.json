@@ -8,9 +8,10 @@
         "properties": {
           "rows": { "type": "number" },
           "columns": { "type": "number" },
-          "probability": { "type": "number", "minimum": 0, "maximum": 1 }
+          "probability": { "type": "number", "minimum": 0, "maximum": 1 },
+          "initialState": { "type":  "number", "minimum": 0, "maximum": 2}
         },
-        "required": ["rows", "columns", "probability"]
+        "required": ["rows", "columns", "probability", "initialState"]
       },
       "timesteps": {
         "type": "array",

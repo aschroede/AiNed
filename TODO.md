@@ -20,8 +20,8 @@
 9. ~~Make sure you can write a state to a dipole that is already in that states (blue -> blue, red -> red)~~
 10. ~~Make sure results are reproducible with a seed~~
 11. Make sure to use only integer values?
-12. Clean up reinforce code
-13. Function for generating random numbers and saving them to a file
+12. ~~Clean up reinforce code~~
+13. ~~Function for generating random numbers and saving them to a file~~
 14. CLI option to read in random numbers from a file to use
     15. They should be able to process an input file and specify the type of random number generator to use
         16. If they want to use numbers from a file, they need to specify that they want to use a file and provide the filepath

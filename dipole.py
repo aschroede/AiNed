@@ -8,14 +8,14 @@ class State(Enum):
     ON = 2
 
 class Dipole:
-    def __init__(self, x, y, dirty=False):
+    def __init__(self, x, y, initial_state = 0):
         self.x = x
         self.y = y
-        self.current_state = State.UNKNOWN
-        self.proposed_state = State.UNKNOWN
+        self.current_state = State(initial_state)
+        self.proposed_state = State(initial_state)
 
         # The dirty flag is set if the proposed state is different from the current state
-        self.dirty = dirty
+        self.dirty = False
         # The reinforced flag is set if we want to write a state to the dipole that is the same as the current state
         # and "reinforce" it.
         self.reinforced = False

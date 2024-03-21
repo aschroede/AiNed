@@ -8,10 +8,11 @@ from calculator import calc_all_probs
 
 
 class Board:
-    def __init__(self, size_x, size_y, flip_probability, generator: IGenerator):
+    def __init__(self, size_x, size_y, flip_probability, generator: IGenerator, initial_states = 0):
         self.size_x = size_x
         self.size_y = size_y
         self.flip_probability = flip_probability
+        self.initial_states = initial_states
         self.history_manager = HistoryManager()
         self.grid = np.zeros((size_x, size_y), dtype=Dipole)
         self.initialize_grid()
@@ -24,7 +25,7 @@ class Board:
     def initialize_grid(self):
         for i in range(self.size_x):
             for j in range(self.size_y):
-                self.grid[i, j] = Dipole(i, j)
+                self.grid[i, j] = Dipole(i, j, self.initial_states)
 
     def get_dipole(self, x, y) -> Dipole:
         return self.grid[x, y]
