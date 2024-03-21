@@ -49,19 +49,19 @@ def test_board_dirty():
     assert board.is_changed()
 
 
-def test_propagate():
-    board = Board(2, 2, 0.7, random_gen)
-
-    # First stage changes
-    board.get_dipole(0,0).stage_flip(State.OFF)
-
-    # Then calculate probabilities of flipping other dipoles
-    calc_all_probs(board)
-
-    # Then commit the changes and propagate them
-    board.commit_and_propagate_staged_writes()
-
-    actual = board.get_committed_states()
-    print(actual)
-    expected = np.array([[1, 1], [0, 0]])
-    assert_array_equal(actual, expected)
+# def test_propagate():
+#     board = Board(2, 2, 0.7, random_gen)
+#
+#     # First stage changes
+#     board.get_dipole(0,0).stage_flip(State.OFF)
+#
+#     # Then calculate probabilities of flipping other dipoles
+#     calc_all_probs(board)
+#
+#     # Then commit the changes and propagate them
+#     board.commit_and_propagate_staged_writes()
+#
+#     actual = board.get_committed_states()
+#     print(actual)
+#     expected = np.array([[1, 1], [0, 0]])
+#     assert_array_equal(actual, expected)

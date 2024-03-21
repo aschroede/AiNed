@@ -15,7 +15,7 @@
    - Once board is initialised what do I want to do?
       - Visualise in the GUI
       - Pass in a series of writes
-10. Make sure you can read in an initial set of values for a grid
+10. ~~Make sure you can read in an initial set of values for a grid~~
 8. Make sure you are not allowed to set dipole to unknown
 9. ~~Make sure you can write a state to a dipole that is already in that states (blue -> blue, red -> red)~~
 10. ~~Make sure results are reproducible with a seed~~
