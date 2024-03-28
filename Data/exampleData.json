@@ -3,7 +3,7 @@
     "boardProperties": {
         "rows": 6,
         "columns": 6,
-        "probability": 0.5,
+        "probability": 0.7,
         "initialState": 0
     },
     "timesteps": [

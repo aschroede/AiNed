@@ -38,15 +38,22 @@ class FileRandomGenerator(IGenerator):
 
     # Here's a Python version of the Tausworthe PRNG based on the C code provided
 
-    class TausworthePRNG:
-        def __init__(self):
-            self.s0 = 0xFFFFFFFF
-            self.s1 = 0xFFFFFFFF
-            self.s2 = 0xFFFFFFFF
+class TausworthePRNG:
+    def __init__(self):
+        self.s0 = 0xFFFFFFFF
+        self.s1 = 0xFFFFFFFF
+        self.s2 = 0xFFFFFFFF
 
-        def generate(self):
-            self.s0 = (((self.s0 & 0xFFFFFFFE) << 12) ^ (((self.s0 << 13) ^ self.s0) >> 19)) & 0xFFFFFFFF
-            self.s1 = (((self.s1 & 0xFFFFFFF8) << 4) ^ (((self.s1 << 2) ^ self.s1) >> 25)) & 0xFFFFFFFF
-            self.s2 = (((self.s2 & 0xFFFFFFF0) << 17) ^ (((self.s2 << 3) ^ self.s2) >> 11)) & 0xFFFFFFFF
-            return (self.s0 ^ self.s1 ^ self.s2) & 0xFFFFFFFF
+    def generate(self):
+        self.s0 = (((self.s0 & 0xFFFFFFFE) << 12) ^ (((self.s0 << 13) ^ self.s0) >> 19)) & 0xFFFFFFFF
+        self.s1 = (((self.s1 & 0xFFFFFFF8) << 4) ^ (((self.s1 << 2) ^ self.s1) >> 25)) & 0xFFFFFFFF
+        self.s2 = (((self.s2 & 0xFFFFFFF0) << 17) ^ (((self.s2 << 3) ^ self.s2) >> 11)) & 0xFFFFFFFF
+        return (self.s0 ^ self.s1 ^ self.s2) & 0xFFFFFFFF
 
+
+generator = TausworthePRNG()
+print(generator.generate())
+print(generator.generate())
+print(generator.generate())
+print(generator.generate())
+print(generator.generate())
