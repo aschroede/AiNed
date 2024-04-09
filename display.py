@@ -74,8 +74,13 @@ class Display:
         for i in range(self.board.size_x):
             for j in range(self.board.size_y):
                 if (self.board.get_dipole(i, j) not in changed_dipoles):
+
+                    unchanged =  float(self.board.get_dipole(i, j).prob_unchanged())
+                    off = float(self.board.get_dipole(i, j).prob_off())
+                    on = float(self.board.get_dipole(i, j).prob_on())
+
                     self.ax.text(j + 0.5, i + 0.5,
-                                 f'{self.board.get_dipole(i, j).prob_unchanged:.2f}/{self.board.get_dipole(i, j).prob_off:.2f}/{self.board.get_dipole(i, j).prob_on:.2f}',
+                                 f'{unchanged:.2f}/{off:.2f}/{on:.2f}',
                                  ha='center', va='center',
                                  color=TEXT_COLOR,
                                  fontsize=8)

@@ -1,6 +1,10 @@
 from enum import Enum
+import fixedpoint
+from fxpmath import Fxp
+
 import random
 
+DTYPE = "fxp-u16/16"
 
 class State(Enum):
     UNKNOWN = 0
@@ -20,13 +24,13 @@ class Dipole:
         # and "reinforce" it.
         self.reinforced = False
 
-        self.prob_on = 0.0
-        self.prob_off = 0.0
-        self.prob_unchanged = 0.0
+        self.prob_on = Fxp(0, False, dtype=DTYPE)
+        self.prob_off = Fxp(0, False, dtype=DTYPE)
+        self.prob_unchanged = Fxp(0, False, dtype=DTYPE)
 
     def clear_probs(self):
-        self.prob_on = 0
-        self.prob_off = 0
+        self.prob_on.equal(0)
+        self.prob_off.equal(0)
 
     def cycle_states(self):
         self.proposed_state = State((self.proposed_state.value + 1) % len(State))

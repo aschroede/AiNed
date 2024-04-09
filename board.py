@@ -5,13 +5,15 @@ import random
 from generator import IGenerator
 from dipole import State
 from calculator import calc_all_probs
+from fxpmath import Fxp
 
+DTYPE = "fxp-u16/16"
 
 class Board:
     def __init__(self, size_x, size_y, flip_probability, generator: IGenerator, initial_states = 0):
         self.size_x = size_x
         self.size_y = size_y
-        self.flip_probability = flip_probability
+        self.flip_probability = Fxp(flip_probability, dtype=DTYPE)
         self.initial_states = initial_states
         self.history_manager = HistoryManager()
         self.grid = np.zeros((size_x, size_y), dtype=Dipole)

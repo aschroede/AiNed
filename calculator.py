@@ -1,7 +1,9 @@
 from dipole import Dipole, State
 import math
 import numpy as np
+from fxpmath import Fxp
 
+DTYPE = "fxp-u16/16"
 
 def manhatten_distance(first: Dipole, second: Dipole):
     x_delta = abs(first.x - second.x)
@@ -9,23 +11,42 @@ def manhatten_distance(first: Dipole, second: Dipole):
     return x_delta + y_delta
 
 
-def calc_prob(source: Dipole, sink: Dipole, prob):
+def calc_prob(source: Dipole, sink: Dipole, prob: Fxp):
+
+    # Ensure inputs are fixed point
+    assert prob.dtype == DTYPE
+
     distance = manhatten_distance(source, sink)
-    return math.pow(prob, distance)
+    power = Fxp(None, False, dtype=DTYPE)
+    power.equal(prob ** Fxp(distance))
+
+    # Ensure output is fixed point
+    assert power.dtype == DTYPE
+
+    return power
 
 
 def calc_terms(dirty_dipoles: set, sink: Dipole, prob, pos_term = True):
 
     terms = []
     coefficients = []
-    coefficients.append(1)
+
+    initial = Fxp(1, False, dtype=DTYPE)
+
+    coefficients.append(initial)
+
     for index, dipole in enumerate(dirty_dipoles):
         prob_on = calc_prob(dipole, sink, prob)
-        coefficients.append((1 - prob_on) * coefficients[index])
+        one = Fxp(1, False, dtype=DTYPE)
+        coefficients.append((one - prob_on) * coefficients[index])
         prob_on *= coefficients[index]
         terms.append(prob_on)
 
-    return np.sum(terms)
+    sum = Fxp(None, False, dtype=DTYPE)
+    sum.equal(np.sum(terms))
+
+    assert sum.dtype == DTYPE
+    return sum
 
 
 def calc_all_probs(board) -> None:
@@ -42,23 +63,44 @@ def calc_all_probs(board) -> None:
 
                 board.grid[i, j].clear_probs()
 
+                one = Fxp(1, False, dtype=DTYPE)
+
                 if len(positive_dipoles) > 0 and len(negative_dipoles) == 0:
                     prob_pos = calc_terms(positive_dipoles, board.grid[i, j], board.flip_probability)
                     board.grid[i, j].prob_on = prob_pos
-                    board.grid[i, j].prob_unchanged = 1-prob_pos
+
+                    result = Fxp(None, False, dtype=DTYPE)
+                    result.equal(one-prob_pos)
+                    board.grid[i, j].prob_unchanged = result
 
                 elif len(positive_dipoles) == 0 and len(negative_dipoles) > 0:
                     prob_neg = calc_terms(negative_dipoles, board.grid[i, j], board.flip_probability)
                     board.grid[i, j].prob_off = prob_neg
-                    board.grid[i, j].prob_unchanged = 1-prob_neg
+
+                    result = Fxp(None, False, dtype=DTYPE)
+                    result.equal(one-prob_neg)
+                    board.grid[i, j].prob_unchanged = result
 
                 else:
                     pos_term = calc_terms(positive_dipoles, board.grid[i, j], board.flip_probability)
                     neg_term = calc_terms(negative_dipoles, board.grid[i, j], board.flip_probability)
-                    prob_pos = pos_term*(1-neg_term)
-                    prob_neg = neg_term*(1-pos_term)
+
+                    result = Fxp(None, False, dtype=DTYPE)
+                    result.equal(pos_term*(one-neg_term))
+                    prob_pos = result
+                    
+                    result = Fxp(None, False, dtype=DTYPE)
+                    result.equal(neg_term*(one-pos_term))
+                    prob_neg = result
+
+
                     board.grid[i, j].prob_on = prob_pos
                     board.grid[i, j].prob_off = prob_neg
-                    board.grid[i, j].prob_unchanged = 1-prob_pos-prob_neg
+
+                    result = Fxp(None, False, dtype=DTYPE)
+                    result.equal(one-prob_pos-prob_neg)
+                    assert result.dtype == DTYPE
+
+                    board.grid[i, j].prob_unchanged = result
 
 
