@@ -4,7 +4,7 @@ from number_gen import generate_random_numbers
 from historymanager import HistoryManager
 import typer
 from processJson import process_board_data, load_and_validate_json
-from generator import RandomIntGenerator, FileRandomGenerator
+from generator import RandomIntGenerator, FileRandomGenerator, TausworthePRNG
 from typing_extensions import Annotated
 from typing import Optional
 
@@ -46,7 +46,7 @@ def gui(
     """
     Create a visual representation of the dipole grid that you can interact with via a GUI.
     """
-    number_generator = RandomIntGenerator(0, 100, seed)
+    number_generator = TausworthePRNG()
     board = Board(size_x=rows, size_y=columns, flip_probability=probability, generator=number_generator)
     Display(board)
 
