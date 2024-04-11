@@ -65,11 +65,6 @@ class TausworthePRNG:
         value.set_val(rand_number, raw=True)
         
         return value
-        
-
-generator = TausworthePRNG()
-print(generator.get_random().val)
-print(generator.get_random().val)
 
 
 # lib = cdll.LoadLibrary('/home/andrew/Documents/Semester 2/AiNed/ained/libtausworthe.so')

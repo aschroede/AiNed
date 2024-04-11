@@ -26,6 +26,19 @@
     15. They should be able to process an input file and specify the type of random number generator to use
         16. If they want to use numbers from a file, they need to specify that they want to use a file and provide the filepath
         17. If they want to just use the python random function with a seed they need to specify that instead
+18. Write some tests for the tausworthe generator
+19. Write documentation for the tausworthe generator
+20. Put tausworthe c-code in ained repository
+19. Write tests for the fixed-point number operations to ensure correctness
+20. Review last meeting notes to check if I missed any features
+21. Tidy up code
+22. Make sure fxp datatype is stored in a config file or something
+23. Book next meeting with Johan et al.
+24. Generate docs with typer
+
+# Longer Term
+1. Package nicely
+2. Share github repository with AINed guys
 
 # Passing in Writes
 
