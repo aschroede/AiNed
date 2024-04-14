@@ -1,9 +1,9 @@
-# `Awesome-cli`
+# `AiNed`
 
 **Usage**:
 
 ```console
-$ Awesome-cli [OPTIONS] COMMAND [ARGS]...
+$ AiNed [OPTIONS] COMMAND [ARGS]...
 ```
 
 **Options**:
@@ -16,16 +16,16 @@ $ Awesome-cli [OPTIONS] COMMAND [ARGS]...
 
 * `generate-numbers`: Generate a file with random numbers from 0...
 * `gui`: Create a visual representation of the...
-* `process-file`: Read in a json file (input) with a board...
+* `process-file`: Read in a json file (input_file) with...
 
-## `Awesome-cli generate-numbers`
+## `AiNed generate-numbers`
 
 Generate a file with random numbers from 0 to 100. Used for reproducible results.
 
 **Usage**:
 
 ```console
-$ Awesome-cli generate-numbers [OPTIONS] COUNT FILEPATH
+$ AiNed generate-numbers [OPTIONS] COUNT FILEPATH
 ```
 
 **Arguments**:
@@ -37,14 +37,14 @@ $ Awesome-cli generate-numbers [OPTIONS] COUNT FILEPATH
 
 * `--help`: Show this message and exit.
 
-## `Awesome-cli gui`
+## `AiNed gui`
 
 Create a visual representation of the dipole grid that you can interact with via a GUI.
 
 **Usage**:
 
 ```console
-$ Awesome-cli gui [OPTIONS] ROWS COLUMNS
+$ AiNed gui [OPTIONS] ROWS COLUMNS
 ```
 
 **Arguments**:
@@ -55,25 +55,51 @@ $ Awesome-cli gui [OPTIONS] ROWS COLUMNS
 **Options**:
 
 * `--probability FLOAT`: Strength of co-varying effect  [default: 0.7]
-* `--seed INTEGER`: Seed to use for random numbers  [default: 123456]
 * `--help`: Show this message and exit.
 
-## `Awesome-cli process-file`
+## `AiNed process-file`
 
-Read in a json file (input) with a board properties and a series of writes. Save results to output.
+Read in a json file (input_file) with board properties and a series of writes. Perform each write operation
+and propagate the results to neighboring bits. Save the entire history of writes and board states to (output_file)
 
 **Usage**:
 
 ```console
-$ Awesome-cli process-file [OPTIONS] INPUT_FILE OUTPUT_FILE RANDOM_FILE
+$ AiNed process-file [OPTIONS] INPUT_FILE OUTPUT_FILE
 ```
 
 **Arguments**:
 
 * `INPUT_FILE`: File path to JSON file to process.  [required]
 * `OUTPUT_FILE`: File path to save results to.  [required]
-* `RANDOM_FILE`: File with random numbers to use for file processing. Note that such a file can be generated using the generatenumbes command  [required]
 
 **Options**:
 
 * `--help`: Show this message and exit.
+
+## Fixed Point Arithmetic ##
+
+Because this software is intended to be a functional model for simulating calculations
+on an FPGA the goal was to avoid floating point arithmetic since DSPs are limited on
+an FPGA. Thus the [fxpmath](https://github.com/francof2a/fxpmath)  library was used to
+enforce 16-bit fixed point arithmetic. Specifically the following precision was used:
+
+```
+dtype = fxp-u16/16
+Signed = False
+Word bits = 16
+Fract bits = 16
+Int bits = 0
+Val data type = <class 'float'>
+
+Upper = 0.9999847412109375
+Lower = 0.0
+Precision = 1.52587890625e-05
+Overflow = saturate
+Rounding = trunc
+Shifting = expand
+```
+
+To understand what this all means, please refer to the fxpmath library documentation.
+To change the precision change this line
+`DTYPE = "fxp-u16/16"` in the `fixedpoint_config.py` file.
