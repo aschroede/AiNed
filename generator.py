@@ -1,10 +1,12 @@
-from abc import ABC, abstractmethod
-import random
-from ctypes import cdll, c_uint32
 import os
+import random
+from abc import ABC, abstractmethod
+from ctypes import cdll, c_uint32
+
 from fxpmath import Fxp
 
-DTYPE = "fxp-u16/16"
+from fixedpoint_config import DTYPE
+
 
 class IGenerator(ABC):
     @abstractmethod
@@ -40,6 +42,7 @@ class FileRandomGenerator(IGenerator):
         self.counter += 1
         return self.numbers[self.counter % len(self.numbers)]
 
+
 class TausworthePRNG:
     def __init__(self):
         library_path = os.path.join(os.path.dirname(__file__), 'TauswortheInC/libtausworthe.so')
@@ -47,12 +50,11 @@ class TausworthePRNG:
         self.lib.tausworthe_wrapper.restype = c_uint32
 
     def get_random(self):
-
         # lib.tausworthe_wrapper outputs a uint16 ctype in range 0 to 65535
         rand_number = self.lib.tausworthe_wrapper()
         # need to create a fixed point variable with the "fxp-u16/16" data type 
         value = Fxp(None, dtype=DTYPE)
         # need to load the random number as a raw value into the fxp type
         value.set_val(rand_number, raw=True)
-        
+
         return value

@@ -1,9 +1,9 @@
-from dipole import Dipole, State
-import math
 import numpy as np
 from fxpmath import Fxp
 
-DTYPE = "fxp-u16/16"
+from dipole import Dipole, State
+from fixedpoint_config import DTYPE
+
 
 def manhatten_distance(first: Dipole, second: Dipole):
     x_delta = abs(first.x - second.x)
@@ -12,7 +12,6 @@ def manhatten_distance(first: Dipole, second: Dipole):
 
 
 def calc_prob(source: Dipole, sink: Dipole, prob: Fxp):
-
     # Ensure inputs are fixed point
     assert prob.dtype == DTYPE
 
@@ -26,8 +25,7 @@ def calc_prob(source: Dipole, sink: Dipole, prob: Fxp):
     return power
 
 
-def calc_terms(dirty_dipoles: set, sink: Dipole, prob, pos_term = True):
-
+def calc_terms(dirty_dipoles: set, sink: Dipole, prob, pos_term=True):
     terms = []
     coefficients = []
 
@@ -65,42 +63,40 @@ def calc_all_probs(board) -> None:
 
                 one = Fxp(1, False, dtype=DTYPE)
 
+                # Only positive changed dipoles
                 if len(positive_dipoles) > 0 and len(negative_dipoles) == 0:
                     prob_pos = calc_terms(positive_dipoles, board.grid[i, j], board.flip_probability)
                     board.grid[i, j].prob_on = prob_pos
 
-                    result = Fxp(None, False, dtype=DTYPE)
-                    result.equal(one-prob_pos)
-                    board.grid[i, j].prob_unchanged = result
+                    prob_unchanged = Fxp(None, False, dtype=DTYPE)
+                    prob_unchanged.equal(one - prob_pos)
+                    board.grid[i, j].prob_unchanged = prob_unchanged
 
+                # Only negative changed dipoles
                 elif len(positive_dipoles) == 0 and len(negative_dipoles) > 0:
                     prob_neg = calc_terms(negative_dipoles, board.grid[i, j], board.flip_probability)
                     board.grid[i, j].prob_off = prob_neg
 
-                    result = Fxp(None, False, dtype=DTYPE)
-                    result.equal(one-prob_neg)
-                    board.grid[i, j].prob_unchanged = result
+                    prob_unchanged = Fxp(None, False, dtype=DTYPE)
+                    prob_unchanged.equal(one - prob_neg)
+                    board.grid[i, j].prob_unchanged = prob_unchanged
 
+                # Negative and positive changed dipoles
                 else:
                     pos_term = calc_terms(positive_dipoles, board.grid[i, j], board.flip_probability)
                     neg_term = calc_terms(negative_dipoles, board.grid[i, j], board.flip_probability)
 
-                    result = Fxp(None, False, dtype=DTYPE)
-                    result.equal(pos_term*(one-neg_term))
-                    prob_pos = result
-                    
-                    result = Fxp(None, False, dtype=DTYPE)
-                    result.equal(neg_term*(one-pos_term))
-                    prob_neg = result
+                    prob_pos = Fxp(None, False, dtype=DTYPE)
+                    prob_pos.equal(pos_term * (one - neg_term))
 
+                    prob_neg = Fxp(None, False, dtype=DTYPE)
+                    prob_neg.equal(neg_term * (one - pos_term))
 
                     board.grid[i, j].prob_on = prob_pos
                     board.grid[i, j].prob_off = prob_neg
 
-                    result = Fxp(None, False, dtype=DTYPE)
-                    result.equal(one-prob_pos-prob_neg)
-                    assert result.dtype == DTYPE
+                    prob_unchanged = Fxp(None, False, dtype=DTYPE)
+                    prob_unchanged.equal(one - prob_pos - prob_neg)
+                    assert prob_unchanged.dtype == DTYPE
 
-                    board.grid[i, j].prob_unchanged = result
-
-
+                    board.grid[i, j].prob_unchanged = prob_unchanged

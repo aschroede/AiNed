@@ -1,11 +1,13 @@
-import os
-from jsonschema import validate
 import json
+import os
+
+from jsonschema import validate
+
 from board import Board
-from historymanager import HistoryManager
-from dipole import Dipole, State
 from calculator import calc_all_probs
+from dipole import State
 from generator import IGenerator
+from historymanager import HistoryManager
 
 
 def load_and_validate_json(filename):
@@ -34,7 +36,8 @@ def process_board_data(data, output, random_generator: IGenerator):
 
     # Build board
     history_manager = HistoryManager()
-    board = Board(size_x=rows, size_y=columns, flip_probability=prob, generator=random_generator, initial_states = initial_states)
+    board = Board(size_x=rows, size_y=columns, flip_probability=prob, generator=random_generator,
+                  initial_states=initial_states)
 
     # Apply changes for each timestep
     for timestep in timesteps:

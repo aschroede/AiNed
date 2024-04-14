@@ -1,16 +1,14 @@
 import numpy as np
-from dipole import Dipole
-from historymanager import HistoryManager
-import random
-from generator import IGenerator
-from dipole import State
-from calculator import calc_all_probs
 from fxpmath import Fxp
 
-DTYPE = "fxp-u16/16"
+from dipole import Dipole
+from fixedpoint_config import DTYPE
+from generator import IGenerator
+from historymanager import HistoryManager
+
 
 class Board:
-    def __init__(self, size_x, size_y, flip_probability, generator: IGenerator, initial_states = 0):
+    def __init__(self, size_x, size_y, flip_probability, generator: IGenerator, initial_states=0):
         self.size_x = size_x
         self.size_y = size_y
         self.flip_probability = Fxp(flip_probability, dtype=DTYPE)
@@ -22,7 +20,6 @@ class Board:
 
         # Record initial board state
         self.history_manager.record_board(self.get_committed_states())
-
 
     def initialize_grid(self):
         for i in range(self.size_x):
@@ -57,7 +54,7 @@ class Board:
                     if self.grid[i, j] not in changed_dipoles:
                         # Generators return numbers in range 0 to 100
                         number = self.generator.get_random() / 100
-                        self.grid[i,j].propagate(number)
+                        self.grid[i, j].propagate(number)
 
         # Update history
         self.history_manager.record_writes(changed_dipoles)

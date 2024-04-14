@@ -1,18 +1,18 @@
 from enum import Enum
-import fixedpoint
+
 from fxpmath import Fxp
 
-import random
+from fixedpoint_config import DTYPE
 
-DTYPE = "fxp-u16/16"
 
 class State(Enum):
     UNKNOWN = 0
     OFF = 1
     ON = 2
 
+
 class Dipole:
-    def __init__(self, x, y, initial_state = 0):
+    def __init__(self, x, y, initial_state=0):
         self.x = x
         self.y = y
         self.current_state = State(initial_state)
@@ -66,7 +66,6 @@ class Dipole:
         self.current_state = self.proposed_state
         self.dirty = False
         self.reinforced = False
-
 
     def propagate(self, x: int) -> None:
         if x <= self.prob_off:

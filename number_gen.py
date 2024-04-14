@@ -1,10 +1,8 @@
 import os
 import random
-from random import Random
 
 
 def generate_random_numbers(count: int, filepath: str):
-
     directory = os.path.dirname(filepath)
     if directory:
         os.makedirs(directory, exist_ok=True)

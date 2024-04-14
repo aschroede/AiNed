@@ -1,6 +1,5 @@
-# Purpose is to keep a record of changes that were written, and the resulting board state after propogation
-from dipole import Dipole, State
 import os
+
 
 class HistoryManager:
 
@@ -30,10 +29,10 @@ class HistoryManager:
 
         with open(filepath, 'w') as file:
             timestep = 1
-            file.write(str(self.board_history[0])+'\n')
+            file.write(str(self.board_history[0]) + '\n')
 
             for item in self.write_history:
                 file.write(f"Timestep: {str(timestep)}\n")
-                file.write("Writes: " + str(item)+'\n')
-                file.write(str(self.board_history[timestep])+'\n')
+                file.write("Writes: " + str(item) + '\n')
+                file.write(str(self.board_history[timestep]) + '\n')
                 timestep += 1

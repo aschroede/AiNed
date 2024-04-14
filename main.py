@@ -1,12 +1,15 @@
+import typer
+from typing_extensions import Annotated
+
 from board import Board
 from display import Display
+from generator import TausworthePRNG
 from number_gen import generate_random_numbers
-from historymanager import HistoryManager
-import typer
 from processJson import process_board_data, load_and_validate_json
-from generator import RandomIntGenerator, FileRandomGenerator, TausworthePRNG
-from typing_extensions import Annotated
-from typing import Optional
+
+# Information on Typer which is used to build the CLI:
+# Documentation: https://typer.tiangolo.com
+# Source Code: https://github.com/tiangolo/typer
 
 app = typer.Typer()
 
@@ -14,19 +17,15 @@ app = typer.Typer()
 @app.command()
 def process_file(
         input_file: Annotated[str, typer.Argument(help="File path to JSON file to process.")],
-        output_file: Annotated[str, typer.Argument(help="File path to save results to.")],
-        random_file: Annotated[Optional[str], typer.Argument(help="File with random numbers to use for file processing. Note that such a file can be generated using the generatenumbes command")]):
+        output_file: Annotated[str, typer.Argument(help="File path to save results to.")]):
     """
-    Read in a json file (input) with a board properties and a series of writes. Save results to output.
+    Read in a json file (input_file) with board properties and a series of writes. Perform each write operation
+    and propagate the results to neighboring bits. Save the entire history of writes and board states to (output_file)
     """
-    random_generator = None
-    if random_file is None:
-        random_generator = RandomIntGenerator(0, 100, 123456)
-    else:
-        random_generator = FileRandomGenerator(random_file)
-
+    rng = TausworthePRNG()
     data = load_and_validate_json(input_file)
-    process_board_data(data, output_file, random_generator)
+    process_board_data(data, output_file, rng)
+
 
 @app.command()
 def generate_numbers(
@@ -37,18 +36,19 @@ def generate_numbers(
     """
     generate_random_numbers(count, filepath)
 
+
 @app.command()
 def gui(
         rows: Annotated[int, typer.Argument(help="Number of rows of the dipole grid.")],
         columns: Annotated[int, typer.Argument(help="Number of columns of the dipole grid.")],
-        probability: Annotated[float, typer.Option(help="Strength of co-varying effect")] = 0.7,
-        seed: Annotated[int, typer.Option(help="Seed to use for random numbers")] = 123456):
+        probability: Annotated[float, typer.Option(help="Strength of co-varying effect")] = 0.7):
     """
     Create a visual representation of the dipole grid that you can interact with via a GUI.
     """
     number_generator = TausworthePRNG()
     board = Board(size_x=rows, size_y=columns, flip_probability=probability, generator=number_generator)
     Display(board)
+
 
 if __name__ == "__main__":
     app()
