@@ -40,19 +40,10 @@ class FileRandomGenerator(IGenerator):
         self.counter += 1
         return self.numbers[self.counter % len(self.numbers)]
 
-
-# To get the 32-bit pseudorandom number and extract the 16 uppermost bits:
-# random_32_bit = tausworthe()
-# upper_16_bits = random_32_bit >> 16
-
-# print(f"32-bit random number: {random_32_bit}")
-# print(f"Upper 16 bits: {upper_16_bits}")
-
-
-
 class TausworthePRNG:
     def __init__(self):
-        self.lib = cdll.LoadLibrary('/home/andrew/Documents/Semester 2/AiNed/ained/libtausworthe.so')
+        library_path = os.path.join(os.path.dirname(__file__), 'TauswortheInC/libtausworthe.so')
+        self.lib = cdll.LoadLibrary(library_path)
         self.lib.tausworthe_wrapper.restype = c_uint32
 
     def get_random(self):
@@ -65,16 +56,3 @@ class TausworthePRNG:
         value.set_val(rand_number, raw=True)
         
         return value
-
-
-# lib = cdll.LoadLibrary('/home/andrew/Documents/Semester 2/AiNed/ained/libtausworthe.so')
-# lib.tausworthe_wrapper.restype = c_uint32
-
-# first = lib.tausworthe_wrapper()
-# value = Fxp(None, dtype=DTYPE)
-# value.set_val(first, raw=True)
-# print(value)
-
-# second = lib.tausworthe_wrapper()
-# print(f"First call result: {first}")
-# print(f"Second call result: {second}")

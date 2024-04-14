@@ -1,5 +1,7 @@
 from generator import FileRandomGenerator
 from number_gen import generate_random_numbers
+from generator import TausworthePRNG
+import os
 
 def test_file_random_generator():
     test_data ="./Test_Data/random_nums.txt"
@@ -14,3 +16,14 @@ def test_file_random_generator():
         num = generator.get_random()
 
     assert num == first_num
+
+def test_tausworthePRNG():
+    '''
+    Test to ensure the output of the TausworthePRNG is always 16 bits
+    :return:
+    '''
+    rng = TausworthePRNG()
+    for i in range(100):
+        value = rng.get_random().bin()
+        assert len(value) == 16
+
