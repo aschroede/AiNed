@@ -5,7 +5,7 @@ from ctypes import cdll, c_uint32
 
 from fxpmath import Fxp
 
-from fixedpoint_config import DTYPE
+from .fixedpoint_config import DTYPE
 
 
 class IGenerator(ABC):

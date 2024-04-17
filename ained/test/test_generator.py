@@ -1,6 +1,6 @@
-from generator import FileRandomGenerator
+from ained.generator import FileRandomGenerator
 from number_gen import generate_random_numbers
-from generator import TausworthePRNG
+from ained.generator import TausworthePRNG
 import os
 
 def test_file_random_generator():

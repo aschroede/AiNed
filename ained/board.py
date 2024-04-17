@@ -1,10 +1,10 @@
 import numpy as np
 from fxpmath import Fxp
 
-from dipole import Dipole
-from fixedpoint_config import DTYPE
-from generator import IGenerator
-from historymanager import HistoryManager
+from .dipole import Dipole
+from .fixedpoint_config import DTYPE
+from .generator import IGenerator
+from .historymanager import HistoryManager
 
 
 class Board:

@@ -4,7 +4,7 @@ import numpy as np
 from dipole import Dipole, State
 from calculator import calc_all_probs
 from historymanager import HistoryManager
-from generator import RandomIntGenerator
+from ained.generator import RandomIntGenerator
 
 random_gen = RandomIntGenerator(0, 100, 123456)
 

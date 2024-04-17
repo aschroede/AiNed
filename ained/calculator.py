@@ -1,8 +1,8 @@
 import numpy as np
 from fxpmath import Fxp
 
-from dipole import Dipole, State
-from fixedpoint_config import DTYPE
+from .dipole import Dipole, State
+from .fixedpoint_config import DTYPE
 
 
 def manhatten_distance(first: Dipole, second: Dipole):
