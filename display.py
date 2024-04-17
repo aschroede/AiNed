@@ -65,13 +65,13 @@ class Display:
         self.board.history_manager.export_to_file(filename)
 
     def clear_probs(self):
-        self.ax.texts.clear()
+        [p.remove() for p in reversed(self.ax.texts)]
         self.fig.canvas.draw()
 
     def display_probs(self):
 
         changed_dipoles = self.board.get_changed_dipoles()
-        self.ax.texts.clear()  # Clear previous text annotations
+        [p.remove() for p in reversed(self.ax.texts)]
         for i in range(self.board.size_x):
             for j in range(self.board.size_y):
                 if (self.board.get_dipole(i, j) not in changed_dipoles):
@@ -88,13 +88,13 @@ class Display:
 
     def display_committed_writes(self):
         self.clear_probs()
-        self.ax.patches.clear()
+        [p.remove() for p in reversed(self.ax.patches)]
         states = self.board.get_committed_states()
         self.im.set_data(states)
         self.fig.canvas.draw()
 
     def display_staged_writes(self):
-        self.ax.patches.clear()
+        [p.remove() for p in reversed(self.ax.patches)]
 
         states = self.board.get_proposed_states()
         self.im.set_data(states)
