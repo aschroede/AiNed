@@ -1,5 +1,5 @@
 {
-    "$schema": "./jasonSchema.json",
+    "$schema": "jasonSchema.json",
     "boardProperties": {
         "rows": 6,
         "columns": 6,

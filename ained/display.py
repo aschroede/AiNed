@@ -3,11 +3,11 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import numpy as np
-from board import Board
+from .board import Board
 from matplotlib.widgets import Button
 from matplotlib.colors import ListedColormap
-from dipole import State
-from calculator import calc_all_probs
+from .dipole import State
+from .calculator import calc_all_probs
 from tkinter.filedialog import asksaveasfilename
 import tkinter as tk
 

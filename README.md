@@ -1,9 +1,18 @@
-# `AiNed`
+# Installation
+Note that because the tausworthe random number generator is a .so file the
+program can currently only run on Linux systems - Windows is not supported
+at the moment. The program can be installed 
+
+```console
+$ pip install ained
+```
+
+# ained Usage
 
 **Usage**:
 
 ```console
-$ AiNed [OPTIONS] COMMAND [ARGS]...
+$ ained [OPTIONS] COMMAND [ARGS]...
 ```
 
 **Options**:
@@ -18,14 +27,14 @@ $ AiNed [OPTIONS] COMMAND [ARGS]...
 * `gui`: Create a visual representation of the...
 * `process-file`: Read in a json file (input_file) with...
 
-## `AiNed generate-numbers`
+## `ained generate-numbers`
 
 Generate a file with random numbers from 0 to 100. Used for reproducible results.
 
 **Usage**:
 
 ```console
-$ AiNed generate-numbers [OPTIONS] COUNT FILEPATH
+$ ained generate-numbers [OPTIONS] COUNT FILEPATH
 ```
 
 **Arguments**:
@@ -37,14 +46,14 @@ $ AiNed generate-numbers [OPTIONS] COUNT FILEPATH
 
 * `--help`: Show this message and exit.
 
-## `AiNed gui`
+## `ained gui`
 
 Create a visual representation of the dipole grid that you can interact with via a GUI.
 
 **Usage**:
 
 ```console
-$ AiNed gui [OPTIONS] ROWS COLUMNS
+$ ained gui [OPTIONS] ROWS COLUMNS
 ```
 
 **Arguments**:
@@ -57,7 +66,7 @@ $ AiNed gui [OPTIONS] ROWS COLUMNS
 * `--probability FLOAT`: Strength of co-varying effect  [default: 0.7]
 * `--help`: Show this message and exit.
 
-## `AiNed process-file`
+## `ained process-file`
 
 Read in a json file (input_file) with board properties and a series of writes. Perform each write operation
 and propagate the results to neighboring bits. Save the entire history of writes and board states to (output_file)
@@ -65,7 +74,7 @@ and propagate the results to neighboring bits. Save the entire history of writes
 **Usage**:
 
 ```console
-$ AiNed process-file [OPTIONS] INPUT_FILE OUTPUT_FILE
+$ ained process-file [OPTIONS] INPUT_FILE OUTPUT_FILE
 ```
 
 **Arguments**:
@@ -76,6 +85,7 @@ $ AiNed process-file [OPTIONS] INPUT_FILE OUTPUT_FILE
 **Options**:
 
 * `--help`: Show this message and exit.
+
 
 ## Fixed Point Arithmetic ##
 
@@ -103,3 +113,25 @@ Shifting = expand
 To understand what this all means, please refer to the fxpmath library documentation.
 To change the precision change this line
 `DTYPE = "fxp-u16/16"` in the `fixedpoint_config.py` file.
+
+# Running from Source Code
+Because the source code is organized into a package structure, one cannot
+simply call 
+
+```console
+python3 main.py gui 7 7
+```
+as this will result in relative import errors. Instead you must run the following
+from the top level directory:
+
+```console
+python3 -m ained.main gui 7 7
+```
+
+The `-m` tells python to load `main` as a module inside the package `ained`
+instead of loading it as a top-level script.
+
+Similarly, you can run all the tests by doing the following:
+```console
+python3 -m pytest
+```

@@ -1,10 +1,13 @@
-from generator import FileRandomGenerator
-from number_gen import generate_random_numbers
-from generator import TausworthePRNG
+from ..generator import FileRandomGenerator
+from ..number_gen import generate_random_numbers
+from ..generator import TausworthePRNG
 import os
 
 def test_file_random_generator():
-    test_data ="./Test_Data/random_nums.txt"
+
+    test_directory = os.path.dirname(os.path.abspath(__file__))
+    file_name = "Test_Data.txt"
+    test_data = os.path.join(test_directory, file_name)
     number_count = 10
     generate_random_numbers(number_count, test_data)
     generator = FileRandomGenerator(test_data)

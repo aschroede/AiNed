@@ -2,7 +2,7 @@ from enum import Enum
 
 from fxpmath import Fxp
 
-from fixedpoint_config import DTYPE
+from .fixedpoint_config import DTYPE
 
 
 class State(Enum):

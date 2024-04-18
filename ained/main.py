@@ -1,11 +1,11 @@
 import typer
 from typing_extensions import Annotated
 
-from board import Board
-from display import Display
-from generator import TausworthePRNG
-from number_gen import generate_random_numbers
-from processJson import process_board_data, load_and_validate_json
+from .board import Board
+from .display import Display
+from .generator import TausworthePRNG
+from .number_gen import generate_random_numbers
+from .processJson import process_board_data, load_and_validate_json
 
 # Information on Typer which is used to build the CLI:
 # Documentation: https://typer.tiangolo.com

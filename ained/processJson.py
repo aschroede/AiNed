@@ -3,11 +3,11 @@ import os
 
 from jsonschema import validate
 
-from board import Board
-from calculator import calc_all_probs
-from dipole import State
-from generator import IGenerator
-from historymanager import HistoryManager
+from .board import Board
+from .calculator import calc_all_probs
+from .dipole import State
+from .generator import IGenerator
+from .historymanager import HistoryManager
 
 
 def load_and_validate_json(filename):
