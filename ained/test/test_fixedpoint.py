@@ -1,6 +1,6 @@
 from fxpmath import Fxp
 from math import isclose
-from fixedpoint_config import DTYPE
+from ..fixedpoint_config import DTYPE
 def test_multiplication():
     # Fxp as operands
     x1 = Fxp(0.5, signed=False, dtype=DTYPE)

@@ -38,10 +38,11 @@
     ~~24. Generate docs with typer~~
     ~~25. Make auto complete work with typer~~
     ~~26. Credit typer~~
-26. Build a package
+~~26. Build a package~~
 27. Include document with equations for calculating probabilities
 2. Share github repository with AINed guys
 3. Make tausworthe seed configurable through CLI
+4. Do testing and make sure documentation works
 
 # Passing in Writes
 

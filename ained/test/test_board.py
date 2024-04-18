@@ -1,10 +1,8 @@
 from numpy.testing import assert_array_equal
-from board import Board
 import numpy as np
-from dipole import Dipole, State
-from calculator import calc_all_probs
-from historymanager import HistoryManager
-from ained.generator import RandomIntGenerator
+from ..board import Board
+from ..dipole import State
+from ..generator import RandomIntGenerator
 
 random_gen = RandomIntGenerator(0, 100, 123456)
 

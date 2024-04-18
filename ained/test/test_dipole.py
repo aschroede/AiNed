@@ -1,4 +1,4 @@
-from dipole import Dipole, State
+from ..dipole import Dipole, State
 
 def test_set_dipole_state():
     dipole = Dipole(0, 0)
