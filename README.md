@@ -115,6 +115,7 @@ To change the precision change this line
 `DTYPE = "fxp-u16/16"` in the `fixedpoint_config.py` file.
 
 # Running from Source Code
+## Normal Mode
 Because the source code is organized into a package structure, one cannot
 simply call 
 
@@ -122,7 +123,7 @@ simply call
 python3 main.py gui 7 7
 ```
 as this will result in relative import errors. Instead you must run the following
-from the top level directory:
+from the root of the cloned repository (AiNed).
 
 ```console
 python3 -m ained.main gui 7 7
@@ -135,3 +136,15 @@ Similarly, you can run all the tests by doing the following:
 ```console
 python3 -m pytest
 ```
+
+## Debug Mode
+If you are using Pycharm and want to run the code in debug mode, you must first
+setup a debug configuration via [this tutorial](https://www.jetbrains.com/help/pycharm/run-debug-configuration.html#createExplicitly).
+Inside of the *Run/Debug Configuration* dialog enter the following information
+
+1. Select **module** and enter the module path as **ained.main**
+2. In the parameters section enter the ained arguments -  for example to start the gui process with a 7 by 7 grid enter **gui 7 7**
+3. Ensure the working directory is set to the root of the cloned repository (AiNed). 
+
+Once the debug configuration is setup you should be able to select the configuration and click on the
+debug icon in Pycharm to run the program in debug mode. 
