@@ -1,11 +1,65 @@
 # Installation
+
+## From Python Package Index
 Note that because the tausworthe random number generator is a .so file the
 program can currently only run on Linux systems - Windows is not supported
-at the moment. The program can be installed 
+at the moment. The program can be installed with the following command.
 
 ```console
 $ pip install ained
 ```
+
+## From Source
+
+The `ained` program uses a variety of python libraries so it is recommended that
+you create a virtual environment if you don't want package conflicts.
+
+```commandline
+$ python3 -m venv .venv
+```
+Then activate the virtual environment:
+```commandline
+$ source .venv/bin/activate
+```
+`ained` uses the **Poetry** package to manage its dependencies. 
+We need to install this in our virtual environment using
+```commandline
+(.venv) $ pip install poetry
+```
+
+Now clone the repository to your local machine:
+```commandline
+(.venv) $ git clone https://github.com/aschroede/AiNed.git
+```
+Change directories so you are inside the AiNed repository you just cloned
+```commandline
+(.venv) $ cd AiNed
+```
+Inside this folder there should be a `pyproject.toml` file which is a list of all
+the dependencies and is what allows you to actually install ained. To install:
+```commandline
+(.venv) ~/Ained $ poetry install
+```
+You should now have poetry installed! To see how to use it, proceed to the next section. 
+
+# Running Experiments
+To run the experiments make sure you have cloned the repository to your local machine.
+Navigate to the `Experiments` folder which contains a list of input files, one for each
+experiment. There is also a script called `run_experiments.sh` which will process each
+of the files in the `Input` directory and save the corresponding output to an `Outputs`
+folder. To process the input files run the following (make sure you are in the Experiments
+directory first!)
+```commandline
+$ ~/Experiments source run_experiments.sh
+```
+Note that the repository may already have Outputs that I have previously generated
+inside the `Outputs` folder. You can delete this folder and regenerate it using the
+above command and check that the new outputs are the same as the old ones (they should be!).
+You can also add additional input files you want to test to the `Inputs` folder and
+they will be processed along with all the other input files when the above script is used.
+
+
+
 
 # ained Usage
 
@@ -114,7 +168,7 @@ To understand what this all means, please refer to the fxpmath library documenta
 To change the precision change this line
 `DTYPE = "fxp-u16/16"` in the `fixedpoint_config.py` file.
 
-# Running from Source Code
+# Running from Pycharm Terminal
 ## Normal Mode
 Because the source code is organized into a package structure, one cannot
 simply call 
