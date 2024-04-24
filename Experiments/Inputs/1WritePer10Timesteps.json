@@ -1,0 +1,72 @@
+{
+    "$schema": "jasonSchema.json",
+    "boardProperties": {
+        "rows": 8,
+        "columns": 8,
+        "probability": 0.7,
+        "initialState": 1
+    },
+    "timesteps": [
+        {
+        "time": 1,
+        "changes": [
+            {"x": 5, "y": 5, "state": 2}
+        ]
+        },
+        {
+        "time": 2,
+        "changes": [
+            {"x": 4, "y": 5, "state": 2}
+        ]
+        },
+        {
+        "time": 3,
+        "changes": [
+            {"x": 4, "y": 5, "state": 1}
+        ]
+        },
+        {
+        "time": 4,
+        "changes": [
+            {"x": 2, "y": 4, "state": 2}
+        ]
+        },
+        {
+        "time": 5,
+        "changes": [
+            {"x": 7, "y": 7, "state": 1}
+        ]
+        },
+        {
+        "time": 6,
+        "changes": [
+            {"x": 4, "y": 5, "state": 2}
+        ]
+        },
+        {
+        "time": 7,
+        "changes": [
+            {"x": 7, "y": 7, "state": 1}
+        ]
+        },
+        {
+        "time": 8,
+        "changes": [
+            {"x": 1, "y": 1, "state": 1}
+        ]
+        },
+        {
+        "time": 9,
+        "changes": [
+            {"x": 2, "y": 2, "state": 2}
+        ]
+        },
+        {
+        "time": 10,
+        "changes": [
+            {"x": 7, "y": 1, "state": 1}
+        ]
+        }
+    ]
+}
+  

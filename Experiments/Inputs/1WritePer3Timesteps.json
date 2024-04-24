@@ -1,0 +1,30 @@
+{
+    "$schema": "jasonSchema.json",
+    "boardProperties": {
+        "rows": 8,
+        "columns": 8,
+        "probability": 0.7,
+        "initialState": 1
+    },
+    "timesteps": [
+        {
+        "time": 1,
+        "changes": [
+            {"x": 2, "y": 3, "state": 2}
+        ]
+        },
+        {
+        "time": 2,
+        "changes": [
+            {"x": 3, "y": 4, "state": 2}
+        ]
+        },
+        {
+        "time": 3,
+        "changes": [
+            {"x": 4, "y": 5, "state": 1}
+        ]
+        }
+    ]
+}
+  

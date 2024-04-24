@@ -41,7 +41,6 @@ def process_board_data(data, output, random_generator: IGenerator):
 
     # Apply changes for each timestep
     for timestep in timesteps:
-        print(f"Time: {timestep['time']}, Changes: {timestep['changes']}")
         for change in timestep['changes']:
             x = change['x']
             y = change['y']

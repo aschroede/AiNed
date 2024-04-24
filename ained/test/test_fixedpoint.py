@@ -24,7 +24,6 @@ def test_addition():
 
 def test_overflow():
     x1 = Fxp(0.8, signed=False, dtype=DTYPE)
-    print(x1.info(verbose=True))
     x2 = Fxp(0.5, signed=False, dtype=DTYPE)
     y = Fxp(None, signed=False, dtype=DTYPE)
     y.equal(x1 + x2)
