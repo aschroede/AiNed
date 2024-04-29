@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ained"
-version = "0.2.2"
+version = "0.2.3"
 description = "Stochastic Synchrony Functional Model in Python"
 authors = ["aschroede <aschroed@ualberta.ca>"]
 readme = "README.md"

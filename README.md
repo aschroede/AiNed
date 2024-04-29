@@ -1,9 +1,10 @@
 # Installation
-
-## From Python Package Index
 Note that because the tausworthe random number generator is a .so file the
 program can currently only run on Linux systems - Windows is not supported
-at the moment. The program can be installed with the following command.
+at the moment. 
+
+## From Python Package Index
+The program can be installed with the following command:
 
 ```console
 $ pip install ained
@@ -40,10 +41,11 @@ the dependencies and is what allows you to actually install ained. To install:
 ```commandline
 (.venv) ~/Ained $ poetry install
 ```
-You should now have poetry installed! To see how to use it, proceed to the next section. 
+You should now have AiNed installed! To see how to use it, proceed to the next section. 
 
 # Running Experiments
-To run the experiments make sure you have cloned the repository to your local machine.
+To run the experiments make sure you have followed the steps in the installation section **From Source** to
+first clone the AiNed repository and then install the program.
 Navigate to the `Experiments` folder which contains a list of input files, one for each
 experiment. There is also a script called `run_experiments.sh` which will process each
 of the files in the `Input` directory and save the corresponding output to an `Outputs`
